@@ -9,8 +9,9 @@ from OpenGL.GLU import *
 Player = {
     'WorldInteraction': {
         'ActiveKeys': set(),
-        'speed': 0.002,
-        'gravity': 0.08,
+        'speed': 0.02,
+        'gravity': 0.04,
+        'jump_strengh': 0.5,
         'velocity': [0.0, 0.0, 0.0],
         'on_ground': False,
     },
@@ -19,7 +20,8 @@ Player = {
         'CameraRotation': [0.0, 0.0],
     },
     'Settings': {
-        'sensitivity': 0.2
+        'sensitivity': 0.2,
+        'CurrentScreen': None
     }
 }
 
@@ -28,6 +30,7 @@ last_time = time.time()
 last_mouse_cursor = [0, 0]
 angle = 0.0
 
+WorldElements = []
 
 def key_down(key, x, y):
     Player['WorldInteraction']['ActiveKeys'].add(key.decode('utf-8'))
@@ -92,6 +95,7 @@ def get_camera_right():
     return [right[0]/length, right[1]/length, right[2]/length]
 
 def draw_cube(x, y, z):
+    WorldElements.append({'position': [x, y, z], 'size': [1.0, 1.0, 1.0]})
     glBegin(GL_QUADS)
 
     # rouge
@@ -146,6 +150,7 @@ def draw_cube(x, y, z):
 
 
 def draw_pyramid(x, y, z):
+    WorldElements.append({'position': [x, y, z], 'size': [1.0, 1.0, 1.0]})
     glBegin(GL_TRIANGLES)
 
     # rouge
@@ -191,6 +196,7 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
             px += overlap_x * (1 if dx > 0 else -1)
         elif overlap_y < overlap_z:
             py += overlap_y * (1 if dy > 0 else -1)
+            Player['WorldInteraction']['on_ground'] = True
         else:
             pz += overlap_z * (1 if dz > 0 else -1)
     return [px, py, pz]
@@ -204,24 +210,32 @@ def display():
     now = time.time()
     dt = now - last_time
     last_time = now
+    if Player['WorldInteraction']['on_ground'] == False:
+        Player['WorldInteraction']['velocity'][1] -= Player['WorldInteraction']['gravity'] * dt * 60
 
-    Player['WorldInteraction']['velocity'][1] -= Player['WorldInteraction']['gravity'] * dt * 60
     Player['CameraRelative']['CameraPosition'][1] += Player['WorldInteraction']['velocity'][1] * dt * 60
+
+    for element in WorldElements:
+        Player['CameraRelative']['CameraPosition'] = resolve_collision(
+            Player['CameraRelative']['CameraPosition'],
+            [0.25, 0.9, 0.25],
+            element['position'],
+            element['size']
+        )
 
     if Player['CameraRelative']['CameraPosition'][1] <= 0.0:
         Player['CameraRelative']['CameraPosition'][1] = 0.0
         Player['WorldInteraction']['velocity'][1] = 0.0
         Player['WorldInteraction']['on_ground'] = True
-    else:
-        Player['WorldInteraction']['on_ground'] = False
 
     glRotatef(-Player['CameraRelative']['CameraRotation'][0], -1.0, 0.0, 0.0)
     glRotatef(-Player['CameraRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
     glTranslatef(-Player['CameraRelative']['CameraPosition'][0], -Player['CameraRelative']['CameraPosition'][1], -Player['CameraRelative']['CameraPosition'][2])
 
     glRotatef(angle, 1.0, 1.0, 0.0)
-    draw_cube(0.0, 1.0, 0.0)
-    draw_cube(0.0, 1.0, 2.0)
+    draw_cube(0.0, 0.0, 0.0)
+    draw_cube(0.0, 0.0, 2.0)
+    draw_pyramid(0.0, 0.0, 4.0)
 
     keyboard()
     glutSwapBuffers()
@@ -245,7 +259,8 @@ def keyboard():
         Player['CameraRelative']['CameraPosition'][2] -= right[2] * Player['WorldInteraction']['speed']
     if ' ' in Player['WorldInteraction']['ActiveKeys']:
         if Player['WorldInteraction']['on_ground']:
-            Player['WorldInteraction']['velocity'][1] = 1
+            Player['WorldInteraction']['velocity'][1] = Player['WorldInteraction']['jump_strengh']
+            Player['WorldInteraction']['on_ground'] = False
 
 def reshape(width, height):
     if height == 0:
