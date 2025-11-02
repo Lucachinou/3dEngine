@@ -9,7 +9,7 @@ from OpenGL.GLU import *
 Player = {
     'WorldInteraction': {
         'ActiveKeys': set(),
-        'speed': 0.02,
+        'speed': 0.002,
         'gravity': 0.04,
         'jump_strengh': 0.5,
         'velocity': [0.0, 0.0, 0.0],
@@ -56,7 +56,7 @@ def init():
     glEnable(GL_COLOR_MATERIAL)
 
 def mouse(x, y):
-    global camera_rotiation, last_mouse_cursor
+    global last_mouse_cursor
 
     dx = last_mouse_cursor[0] - x
     dy = y - last_mouse_cursor[1]
@@ -95,62 +95,60 @@ def get_camera_right():
     return [right[0]/length, right[1]/length, right[2]/length]
 
 def draw_cube(x, y, z):
-    WorldElements.append({'position': [x, y, z], 'size': [1.0, 1.0, 1.0]})
     glBegin(GL_QUADS)
 
-    # rouge
+    # rouge (face avant)
     glColor3f(1.0, 0.0, 0.0)
     glNormal3f(0.0, 0.0, 1.0)
-    glVertex3f(-1.0 + x, -1.0 + y,  1.0 + z)
-    glVertex3f( 1.0 + x, -1.0 + y,  1.0 + z)
-    glVertex3f( 1.0 + x,  1.0 + y,  1.0 + z)
-    glVertex3f(-1.0 + x,  1.0 + y,  1.0 + z)
+    glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
+    glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
+    glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
+    glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
 
     # vert (face arrière)
     glColor3f(0.0, 1.0, 0.0)
     glNormal3f(0.0, 0.0, -1.0)
-    glVertex3f(-1.0 + x, -1.0 + y, -1.0 + z)
-    glVertex3f(-1.0 + x,  1.0 + y, -1.0 + z)
-    glVertex3f( 1.0 + x,  1.0 + y, -1.0 + z)
-    glVertex3f( 1.0 + x, -1.0 + y, -1.0 + z)
+    glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
+    glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
+    glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
+    glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
 
     # bleu (face gauche)
     glColor3f(0.0, 0.0, 1.0)
     glNormal3f(-1.0, 0.0, 0.0)
-    glVertex3f(-1.0 + x, -1.0 + y, -1.0 + z)
-    glVertex3f(-1.0 + x, -1.0 + y,  1.0 + z)
-    glVertex3f(-1.0 + x,  1.0 + y,  1.0 + z)
-    glVertex3f(-1.0 + x,  1.0 + y, -1.0 + z)
+    glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
+    glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
+    glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
+    glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
 
     # jaune (face droite)
     glColor3f(1.0, 1.0, 0.0)
     glNormal3f(1.0, 0.0, 0.0)
-    glVertex3f(1.0 + x, -1.0 + y, -1.0 + z)
-    glVertex3f(1.0 + x,  1.0 + y, -1.0 + z)
-    glVertex3f(1.0 + x,  1.0 + y,  1.0 + z)
-    glVertex3f(1.0 + x, -1.0 + y,  1.0 + z)
+    glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
+    glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
+    glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
+    glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
 
     # cyan (face haut)
     glColor3f(0.0, 1.0, 1.0)
     glNormal3f(0.0, 1.0, 0.0)
-    glVertex3f(-1.0 + x,  1.0 + y, -1.0 + z)
-    glVertex3f( 1.0 + x,  1.0 + y, -1.0 + z)
-    glVertex3f( 1.0 + x,  1.0 + y,  1.0 + z)
-    glVertex3f(-1.0 + x,  1.0 + y,  1.0 + z)
+    glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
+    glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
+    glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
+    glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
 
     # magenta (face bas)
     glColor3f(1.0, 0.0, 1.0)
     glNormal3f(0.0, -1.0, 0.0)
-    glVertex3f(-1.0 + x, -1.0 + y, -1.0 + z)
-    glVertex3f( 1.0 + x, -1.0 + y, -1.0 + z)
-    glVertex3f( 1.0 + x, -1.0 + y,  1.0 + z)
-    glVertex3f(-1.0 + x, -1.0 + y,  1.0 + z)
+    glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
+    glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
+    glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
+    glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
 
     glEnd()
 
 
 def draw_pyramid(x, y, z):
-    WorldElements.append({'position': [x, y, z], 'size': [1.0, 1.0, 1.0]})
     glBegin(GL_TRIANGLES)
 
     # rouge
@@ -210,16 +208,24 @@ def display():
     now = time.time()
     dt = now - last_time
     last_time = now
+
+    glRotatef(-Player['CameraRelative']['CameraRotation'][0], -1.0, 0.0, 0.0)
+    glRotatef(-Player['CameraRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
+    glTranslatef(-Player['CameraRelative']['CameraPosition'][0], -Player['CameraRelative']['CameraPosition'][1], -Player['CameraRelative']['CameraPosition'][2])
+
+    glRotatef(angle, 1.0, 1.0, 0.0)
+
     if Player['WorldInteraction']['on_ground'] == False:
         Player['WorldInteraction']['velocity'][1] -= Player['WorldInteraction']['gravity'] * dt * 60
 
     Player['CameraRelative']['CameraPosition'][1] += Player['WorldInteraction']['velocity'][1] * dt * 60
 
     for element in WorldElements:
+        draw_cube(element['position'][0], element['position'][1], element['position'][2])
         Player['CameraRelative']['CameraPosition'] = resolve_collision(
             Player['CameraRelative']['CameraPosition'],
             [0.25, 0.9, 0.25],
-            element['position'],
+            element['position'][:],
             element['size']
         )
 
@@ -227,15 +233,6 @@ def display():
         Player['CameraRelative']['CameraPosition'][1] = 0.0
         Player['WorldInteraction']['velocity'][1] = 0.0
         Player['WorldInteraction']['on_ground'] = True
-
-    glRotatef(-Player['CameraRelative']['CameraRotation'][0], -1.0, 0.0, 0.0)
-    glRotatef(-Player['CameraRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
-    glTranslatef(-Player['CameraRelative']['CameraPosition'][0], -Player['CameraRelative']['CameraPosition'][1], -Player['CameraRelative']['CameraPosition'][2])
-
-    glRotatef(angle, 1.0, 1.0, 0.0)
-    draw_cube(0.0, 0.0, 0.0)
-    draw_cube(0.0, 0.0, 2.0)
-    draw_pyramid(0.0, 0.0, 4.0)
 
     keyboard()
     glutSwapBuffers()
@@ -262,6 +259,16 @@ def keyboard():
             Player['WorldInteraction']['velocity'][1] = Player['WorldInteraction']['jump_strengh']
             Player['WorldInteraction']['on_ground'] = False
 
+def mouse_click(button, state, x, y):
+    forward = get_camera_forward()
+    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+        WorldElements.append({
+            'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 3), int(Player['CameraRelative']['CameraPosition'][1]  - forward[1] * 3), int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 3)],
+            'size': [1.0, 1.0, 1.0],
+        })
+    elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
+        pass
+
 def reshape(width, height):
     if height == 0:
         height = 1
@@ -273,6 +280,14 @@ def reshape(width, height):
     glMatrixMode(GL_MODELVIEW)
     glLoadIdentity()
 
+WorldElements.append({
+    'position': [0.0, -2.0, 0.0],
+    'size': [1.0, 1.0, 1.0],
+})
+WorldElements.append({
+    'position': [0.0, -1.0, 2.0],
+    'size': [1.0, 1.0, 1.0],
+})
 
 glutInit()
 glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH)
@@ -286,5 +301,6 @@ glutIdleFunc(display)
 glutKeyboardFunc(key_down)
 glutKeyboardUpFunc(key_release)
 glutReshapeFunc(reshape)
+glutMouseFunc(mouse_click)
 glutSetCursor(GLUT_CURSOR_NONE)
 glutMainLoop()
