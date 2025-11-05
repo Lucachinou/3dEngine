@@ -185,17 +185,21 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
     dy = py - cy
     dz = pz - cz
 
-    overlap_x = (player_half[0] + cube_half[0]) - abs(dx)
+    overlap_x = (cube_half[0]) - (abs(dx) + 0.3)
     overlap_y = (player_half[1] + cube_half[1]) - abs(dy)
-    overlap_z = (player_half[2] + cube_half[2]) - abs(dz)
+    overlap_z = (cube_half[2]) - (abs(dz) + 0.3)
 
     if overlap_x > 0 and overlap_y > 0 and overlap_z > 0:
+        if dy > 0 and overlap_y < overlap_x and overlap_y < overlap_z:
+            py += overlap_y
+            Player['WorldInteraction']['on_ground'] = True
+            return [px, py, pz]
         if overlap_x < overlap_y and overlap_x < overlap_z:
             px += overlap_x * (1 if dx > 0 else -1)
         elif overlap_y < overlap_z:
             py += overlap_y * (1 if dy > 0 else -1)
             Player['WorldInteraction']['on_ground'] = True
-        else:
+        elif overlap_z < overlap_x:
             pz += overlap_z * (1 if dz > 0 else -1)
     return [px, py, pz]
 
@@ -225,7 +229,7 @@ def display():
         Player['CameraRelative']['CameraPosition'] = resolve_collision(
             Player['CameraRelative']['CameraPosition'],
             [0.25, 0.9, 0.25],
-            element['position'][:],
+            [element['position'][0], element['position'][1], element['position'][2]],
             element['size']
         )
 
