@@ -15,7 +15,10 @@ Player = {
         'velocity': [0.0, 0.0, 0.0],
         'on_ground': False,
     },
-    'CameraRelative': {
+    'PlayerRelative': {
+        'Scale': 1.0,
+        'CameraHeight': 0.7,
+        'FeetPosition': [0.0, 0.0, 0.0],
         'CameraPosition': [0.0, 0.0, 0.0],
         'CameraRotation': [0.0, 0.0],
     },
@@ -61,10 +64,10 @@ def mouse(x, y):
     dx = last_mouse_cursor[0] - x
     dy = y - last_mouse_cursor[1]
 
-    Player['CameraRelative']['CameraRotation'][0] += dy * Player['Settings']['sensitivity']
-    Player['CameraRelative']['CameraRotation'][1] += dx * Player['Settings']['sensitivity']
+    Player['PlayerRelative']['CameraRotation'][0] += dy * Player['Settings']['sensitivity']
+    Player['PlayerRelative']['CameraRotation'][1] += dx * Player['Settings']['sensitivity']
 
-    Player['CameraRelative']['CameraRotation'][0] = max(-89.0, min(89.0, Player['CameraRelative']['CameraRotation'][0]))
+    Player['PlayerRelative']['CameraRotation'][0] = max(-89.0, min(89.0, Player['PlayerRelative']['CameraRotation'][0]))
 
     width = glutGet(GLUT_WINDOW_WIDTH)
     height = glutGet(GLUT_WINDOW_HEIGHT)
@@ -74,8 +77,8 @@ def mouse(x, y):
     glutPostRedisplay()
 
 def get_camera_forward():
-    yaw = math.radians(Player['CameraRelative']['CameraRotation'][1])
-    pitch = math.radians(Player['CameraRelative']['CameraRotation'][0])
+    yaw = math.radians(Player['PlayerRelative']['CameraRotation'][1])
+    pitch = math.radians(Player['PlayerRelative']['CameraRotation'][0])
 
     x = math.cos(pitch) * math.sin(yaw)
     y = math.sin(pitch)
@@ -191,14 +194,14 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
 
     if overlap_x > 0 and overlap_y > 0 and overlap_z > 0:
         if dy > 0 and overlap_y < overlap_x and overlap_y < overlap_z:
-            py += overlap_y
+            py += cy + cube_half[1] + player_half[1]
             Player['WorldInteraction']['on_ground'] = True
+            Player['WorldInteraction']['velocity'][1] = 0
             return [px, py, pz]
         if overlap_x < overlap_y and overlap_x < overlap_z:
             px += overlap_x * (1 if dx > 0 else -1)
         elif overlap_y < overlap_z:
             py += overlap_y * (1 if dy > 0 else -1)
-            Player['WorldInteraction']['on_ground'] = True
         elif overlap_z < overlap_x:
             pz += overlap_z * (1 if dz > 0 else -1)
     return [px, py, pz]
@@ -213,33 +216,40 @@ def display():
     dt = now - last_time
     last_time = now
 
-    glRotatef(-Player['CameraRelative']['CameraRotation'][0], -1.0, 0.0, 0.0)
-    glRotatef(-Player['CameraRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
-    glTranslatef(-Player['CameraRelative']['CameraPosition'][0], -Player['CameraRelative']['CameraPosition'][1], -Player['CameraRelative']['CameraPosition'][2])
+    glRotatef(-Player['PlayerRelative']['CameraRotation'][0], -1.0, 0.0, 0.0)
+    glRotatef(-Player['PlayerRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
+    glTranslatef(-Player['PlayerRelative']['CameraPosition'][0], -Player['PlayerRelative']['CameraPosition'][1], -Player['PlayerRelative']['CameraPosition'][2])
 
     glRotatef(angle, 1.0, 1.0, 0.0)
 
     if Player['WorldInteraction']['on_ground'] == False:
         Player['WorldInteraction']['velocity'][1] -= Player['WorldInteraction']['gravity'] * dt * 60
 
-    Player['CameraRelative']['CameraPosition'][1] += Player['WorldInteraction']['velocity'][1] * dt * 60
+    Player['PlayerRelative']['CameraPosition'][1] += Player['WorldInteraction']['velocity'][1] * dt * 60
 
     for element in WorldElements:
         draw_cube(element['position'][0], element['position'][1], element['position'][2])
-        Player['CameraRelative']['CameraPosition'] = resolve_collision(
-            Player['CameraRelative']['CameraPosition'],
+        Player['PlayerRelative']['CameraPosition'] = resolve_collision(
+            Player['PlayerRelative']['FeetPosition'],
             [0.25, 0.9, 0.25],
             [element['position'][0], element['position'][1], element['position'][2]],
             element['size']
         )
 
-    if Player['CameraRelative']['CameraPosition'][1] <= 0.0:
-        Player['CameraRelative']['CameraPosition'][1] = 0.0
+    if Player['PlayerRelative']['FeetPosition'][1] <= 0.0:
+        Player['PlayerRelative']['FeetPosition'][1] = 0.0
         Player['WorldInteraction']['velocity'][1] = 0.0
         Player['WorldInteraction']['on_ground'] = True
 
     keyboard()
+    update_camera()
     glutSwapBuffers()
+
+def update_camera():
+    fx, fy, fz = Player['PlayerRelative']['FeetPosition']
+    Player['PlayerRelative']['CameraPosition'][0] = fx
+    Player['PlayerRelative']['CameraPosition'][1] = fy + Player['PlayerRelative']['CameraHeight']
+    Player['PlayerRelative']['CameraPosition'][2] = fz
 
 def keyboard():
     global Player
@@ -247,17 +257,17 @@ def keyboard():
     forward = get_camera_forward()
     right = get_camera_right()
     if 's' in Player['WorldInteraction']['ActiveKeys']:
-        Player['CameraRelative']['CameraPosition'][0] += forward[0] * Player['WorldInteraction']['speed']
-        Player['CameraRelative']['CameraPosition'][2] += forward[2] * Player['WorldInteraction']['speed']
+        Player['PlayerRelative']['FeetPosition'][0] += forward[0] * Player['WorldInteraction']['speed']
+        Player['PlayerRelative']['FeetPosition'][2] += forward[2] * Player['WorldInteraction']['speed']
     if 'z' in Player['WorldInteraction']['ActiveKeys']:
-        Player['CameraRelative']['CameraPosition'][0] -= forward[0] * Player['WorldInteraction']['speed']
-        Player['CameraRelative']['CameraPosition'][2] -= forward[2] * Player['WorldInteraction']['speed']
+        Player['PlayerRelative']['FeetPosition'][0] -= forward[0] * Player['WorldInteraction']['speed']
+        Player['PlayerRelative']['FeetPosition'][2] -= forward[2] * Player['WorldInteraction']['speed']
     if 'd' in Player['WorldInteraction']['ActiveKeys']:
-        Player['CameraRelative']['CameraPosition'][0] += right[0] * Player['WorldInteraction']['speed']
-        Player['CameraRelative']['CameraPosition'][2] += right[2] * Player['WorldInteraction']['speed']
+        Player['PlayerRelative']['FeetPosition'][0] += right[0] * Player['WorldInteraction']['speed']
+        Player['PlayerRelative']['FeetPosition'][2] += right[2] * Player['WorldInteraction']['speed']
     if 'q' in Player['WorldInteraction']['ActiveKeys']:
-        Player['CameraRelative']['CameraPosition'][0] -= right[0] * Player['WorldInteraction']['speed']
-        Player['CameraRelative']['CameraPosition'][2] -= right[2] * Player['WorldInteraction']['speed']
+        Player['PlayerRelative']['FeetPosition'][0] -= right[0] * Player['WorldInteraction']['speed']
+        Player['PlayerRelative']['FeetPosition'][2] -= right[2] * Player['WorldInteraction']['speed']
     if ' ' in Player['WorldInteraction']['ActiveKeys']:
         if Player['WorldInteraction']['on_ground']:
             Player['WorldInteraction']['velocity'][1] = Player['WorldInteraction']['jump_strengh']
@@ -267,7 +277,7 @@ def mouse_click(button, state, x, y):
     forward = get_camera_forward()
     if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
         WorldElements.append({
-            'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 3), int(Player['CameraRelative']['CameraPosition'][1]  - forward[1] * 3), int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 3)],
+            'position': [int(Player['PlayerRelative']['CameraPosition'][0] - forward[0] * 3), int(Player['PlayerRelative']['CameraPosition'][1]  - forward[1] * 3), int(Player['PlayerRelative']['CameraPosition'][2] - forward[2] * 3)],
             'size': [1.0, 1.0, 1.0],
         })
     elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
