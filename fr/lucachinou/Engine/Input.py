@@ -3,7 +3,7 @@ import math
 from OpenGL.GLUT import *
 
 from Player import *
-from Render import WorldElements
+from Render import WorldElements, Debug
 
 last_mouse_cursor = [0, 0]
 angle = 0.0
@@ -78,7 +78,7 @@ def normalize(v):
     return v[0]/length, v[1]/length,v[2]/length
 
 def keyboard():
-    global Player
+    global Player, Debug
     #key = key.decode('utf-8')
     forward = get_camera_forward()
     forward = normalize((forward[0], 0, forward[2]))
@@ -101,9 +101,10 @@ def keyboard():
         if Player['WorldInteraction']['velocity'][0] < Player['WorldInteraction']['max_walk_speed'] and Player['WorldInteraction']['velocity'][2] < Player['WorldInteraction']['max_walk_speed']:
             Player['WorldInteraction']['velocity'][0] -= right[0] * Player['WorldInteraction']['speed']
             Player['WorldInteraction']['velocity'][2] -= right[2] * Player['WorldInteraction']['speed']
-    if 'v' in Player['Settings']['ActiveKeys']: # TODO: Delete this when all velocity test are finished!
-        print("Applying velocity..")
-        Player['WorldInteraction']['velocity'][1] += 0.1
+    if '3' in Player['Settings']['ActiveKeys'] and 'H' in Player['Settings']['ActiveKeys']:
+        Debug = True
+    if '3' in Player['Settings']['ActiveKeys'] and 'A' in Player['Settings']['ActiveKeys']:
+        Debug = False
     if ' ' in Player['Settings']['ActiveKeys']:
         if Player['PlayerRelative']['on_ground']:
             Player['WorldInteraction']['velocity'][1] = Player['WorldInteraction']['jump_strengh']

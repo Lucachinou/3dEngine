@@ -42,13 +42,14 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
         if overlap_x < overlap_y and overlap_x < overlap_z and py <= (cy + 1.0):
             if Debug:
                 print("COLLISION X")
+                print(py, cy)
             Player['PlayerRelative']['on_ground'] = False
             px += overlap_x * (1 if dx > 0 else -1)
-        elif overlap_y < overlap_z and py <= (cy + 1.0):
+        elif overlap_y < overlap_z and py < (cy + 1.0):
             if Debug:
                 print("COLLISION Y")
             py += overlap_y * (1 if dy > 0 else -1)
-        elif overlap_z < overlap_x and py <= (cz + 1.0):
+        elif overlap_z < overlap_x and py < (cz + 1.0):
             if Debug:
                 print("COLLISION Z")
             Player['PlayerRelative']['on_ground'] = False
@@ -73,14 +74,14 @@ def display():
 
 
     if Player['PlayerRelative']['on_ground'] == False:
-        Player['WorldInteraction']['velocity'][1] -= Player['WorldInteraction']['gravity'] * dt * 60
+        Player['WorldInteraction']['velocity'][1] -= Player['WorldInteraction']['gravity'] * dt * 20
 
     for i in [0, 2]:
         Player['WorldInteraction']['velocity'][i] *= (1 - Player['WorldInteraction']['friction'] * dt)
 
-    Player['PlayerRelative']['FeetPosition'][0] += Player['WorldInteraction']['velocity'][0] * dt * 60
-    Player['PlayerRelative']['FeetPosition'][1] += Player['WorldInteraction']['velocity'][1] * dt * 60
-    Player['PlayerRelative']['FeetPosition'][2] += Player['WorldInteraction']['velocity'][2] * dt * 60
+    Player['PlayerRelative']['FeetPosition'][0] += Player['WorldInteraction']['velocity'][0] * dt * 20
+    Player['PlayerRelative']['FeetPosition'][1] += Player['WorldInteraction']['velocity'][1] * dt * 20
+    Player['PlayerRelative']['FeetPosition'][2] += Player['WorldInteraction']['velocity'][2] * dt * 20
 
     vx, vy, vz = Player['WorldInteraction']['velocity']
     speed = math.sqrt(vx * vx + vz * vz)
@@ -93,7 +94,7 @@ def display():
         draw_cube(element['position'][0], element['position'][1], element['position'][2])
         Player['PlayerRelative']['FeetPosition'] = resolve_collision(
             Player['PlayerRelative']['FeetPosition'],
-            [0.25, 0.5, 0.25],
+            [0.25, 0.9, 0.25],
             [element['position'][0], element['position'][1], element['position'][2]],
             [(element['size'][0] / 2), (element['size'][1] / 2), (element['size'][2] / 2)]
         )
@@ -150,8 +151,10 @@ last_mouse_cursor = [glutGet(GLUT_WINDOW_WIDTH)//2, glutGet(GLUT_WINDOW_HEIGHT)/
 glutPassiveMotionFunc(mouse)
 glutDisplayFunc(display)
 glutIdleFunc(display)
+
 glutKeyboardFunc(key_down)
 glutKeyboardUpFunc(key_release)
+
 glutReshapeFunc(reshape)
 glutMouseFunc(mouse_click)
 glutSetCursor(GLUT_CURSOR_NONE)

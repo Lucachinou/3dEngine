@@ -5,7 +5,7 @@ from OpenGL.GLU import *
 
 WorldElements = []
 DebugElements = []
-Debug = True
+Debug = False
 
 def init():
     glClearColor(0.1, 0.4, 0.9, 0.7)
