@@ -10,6 +10,7 @@ from Player import *
 from Input import *
 from Render_Shape import *
 from Render import *
+from RenderUI import *
 
 last_time = time.time()
 
@@ -111,8 +112,14 @@ def display():
         Player['WorldInteraction']['velocity'][1] = 0.0
         Player['PlayerRelative']['on_ground'] = True
 
+    INPUT_FLAGS.update({"Use_old_placement_mechanics": True})
+
     keyboard()
     update_camera()
+
+    begin_ortho(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT))
+    draw_crosshair(*load_texture("crosshair.png"), glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT))
+    end_ortho()
 
     glutSwapBuffers()
 
@@ -121,17 +128,6 @@ def update_camera():
     Player['CameraRelative']['CameraPosition'][0] = fx
     Player['CameraRelative']['CameraPosition'][1] = fy + Player['CameraRelative']['CameraHeight']
     Player['CameraRelative']['CameraPosition'][2] = fz
-
-def reshape(width, height):
-    if height == 0:
-        height = 1
-    aspect = width / height
-    glViewport(0, 0, width, height)
-    glMatrixMode(GL_PROJECTION)
-    glLoadIdentity()
-    gluPerspective(45.0, aspect, 0.1, 50.0)
-    glMatrixMode(GL_MODELVIEW)
-    glLoadIdentity()
 
 WorldElements.append({
     'position': [0.0, -2.0, 0.0],

@@ -8,6 +8,8 @@ from Render import WorldElements, Debug
 last_mouse_cursor = [0, 0]
 angle = 0.0
 
+INPUT_FLAGS = {}
+
 def mouse(x, y):
     global last_mouse_cursor
 
@@ -27,22 +29,40 @@ def mouse(x, y):
     glutPostRedisplay()
 
 def mouse_click(button, state, x, y):
-    forward = get_camera_forward()
-    if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
-        WorldElements.append({
-            'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 4), int(Player['CameraRelative']['CameraPosition'][1]  - forward[1] * 4), int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 4)],
-            'size': [1.0, 1.0, 1.0],
-        })
-    elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
-        try:
-            WorldElements.remove({
-                'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 4),
-                             int(Player['CameraRelative']['CameraPosition'][1] - forward[1] * 4),
-                             int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 4)],
+    if INPUT_FLAGS.get('Use_old_placement_mechanics', False) == True:
+        forward = get_camera_forward()
+        if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+            WorldElements.append({
+                'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 4), int(Player['CameraRelative']['CameraPosition'][1]  - forward[1] * 4), int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 4)],
                 'size': [1.0, 1.0, 1.0],
             })
-        except ValueError:
-            pass
+        elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
+            try:
+                WorldElements.remove({
+                    'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 4),
+                                 int(Player['CameraRelative']['CameraPosition'][1] - forward[1] * 4),
+                                 int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 4)],
+                    'size': [1.0, 1.0, 1.0],
+                })
+            except ValueError:
+                pass
+    else:
+        forward = get_camera_forward()
+        px, py, pz = Player['CameraRelative']['CameraPosition']
+
+        target_x = px + (1 if -forward[0] > 0 else -1) * math.floor(abs(forward[0] * 4))
+        target_y = py + (1 if -forward[1] > 0 else -1) * math.floor(abs(forward[1] * 4))
+        target_z = pz + (1 if -forward[2] > 0 else -1) * math.floor(abs(forward[2] * 4))
+
+        block_target = {"position": [int(target_x), int(target_y), int(target_z)], "size": [1.0, 1.0, 1.0]}
+
+        if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+            WorldElements.append(block_target)
+        elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
+            try:
+                WorldElements.remove(block_target)
+            except ValueError:
+                pass
 
 def get_camera_forward():
     yaw = math.radians(Player['CameraRelative']['CameraRotation'][1])
