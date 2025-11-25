@@ -1,1 +1,3 @@
-# 3dEngine
+# 3dEngine | Alpha status
+
+*work in progress*
