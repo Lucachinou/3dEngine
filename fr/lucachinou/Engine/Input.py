@@ -3,7 +3,7 @@ import math
 from OpenGL.GLUT import *
 
 from Player import *
-from Render import WorldElements, Debug
+from Render import WorldElements, RENDER_FLAGS
 
 last_mouse_cursor = [0, 0]
 angle = 0.0
@@ -29,7 +29,7 @@ def mouse(x, y):
     glutPostRedisplay()
 
 def mouse_click(button, state, x, y):
-    if INPUT_FLAGS.get('Use_old_placement_mechanics', False) == True:
+    if INPUT_FLAGS.get('Use_old_placement_mechanics', False):
         forward = get_camera_forward()
         if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
             WorldElements.append({
@@ -86,10 +86,12 @@ def get_camera_right():
     return [right[0]/length, right[1]/length, right[2]/length]
 
 def key_down(key, x, y):
-    Player['Settings']['ActiveKeys'].add(key.decode('utf-8'))
+    try: Player['Settings']['ActiveKeys'].add(key.decode('utf-8'))
+    except KeyError: pass
 
 def key_release(key, x, y):
-    Player['Settings']['ActiveKeys'].remove(key.decode('utf-8'))
+    try: Player['Settings']['ActiveKeys'].remove(key.decode('utf-8'))
+    except KeyError: pass
 
 def normalize(v):
     length = math.sqrt(v[0]**2 + v[2]**2)
@@ -98,7 +100,7 @@ def normalize(v):
     return v[0]/length, v[1]/length,v[2]/length
 
 def keyboard():
-    global Player, Debug
+    global Player, RENDER_FLAGS
     #key = key.decode('utf-8')
     forward = get_camera_forward()
     forward = normalize((forward[0], 0, forward[2]))
@@ -122,9 +124,9 @@ def keyboard():
             Player['WorldInteraction']['velocity'][0] -= right[0] * Player['WorldInteraction']['speed']
             Player['WorldInteraction']['velocity'][2] -= right[2] * Player['WorldInteraction']['speed']
     if '3' in Player['Settings']['ActiveKeys'] and 'H' in Player['Settings']['ActiveKeys']:
-        Debug = True
+        RENDER_FLAGS['Debug'] = True
     if '3' in Player['Settings']['ActiveKeys'] and 'A' in Player['Settings']['ActiveKeys']:
-        Debug = False
+        RENDER_FLAGS['Debug'] = True
     if ' ' in Player['Settings']['ActiveKeys']:
         if Player['PlayerRelative']['on_ground']:
             Player['WorldInteraction']['velocity'][1] = Player['WorldInteraction']['jump_strengh']

@@ -4,7 +4,7 @@ Player = {
         'gravity': 0.08,
         'friction': 15.0,
         'jump_strengh': 0.45,
-        'max_walk_speed': 0.2,
+        'max_walk_speed': 0.4,
         'velocity': [0.0, 0.0, 0.0],
     },
     'CameraRelative': {

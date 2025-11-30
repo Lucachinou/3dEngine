@@ -5,19 +5,19 @@ from OpenGL.GLU import *
 
 WorldElements = []
 DebugElements = []
-Debug = False
+RENDER_FLAGS = {'Debug': False}
 
-def init():
+def RenderLight():
     glClearColor(0.1, 0.4, 0.9, 0.7)
     glEnable(GL_DEPTH_TEST)
     glShadeModel(GL_SMOOTH)
 
     glEnable(GL_LIGHTING)
 
-    lightpos = [0.0, 0.0, 0.0, 1.0]
+    lightpos = [0.0, 5.0, 0.0, 1.0]
     lightcolor = [1.0, 1.0, 1.0, 1.0]
     glLightfv(GL_LIGHT0, GL_POSITION, lightpos)
-    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.1, 0.1, 0.1, 1.0])
+    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.3, 0.3, 0.3, 1.0])
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightcolor)
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightcolor)
 

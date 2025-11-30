@@ -32,7 +32,7 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
     overlap_y = y_process
     overlap_z = z_process
 
-    if Debug:
+    if RENDER_FLAGS.get("Debug", False):
         DebugElements.append(([cx, cy, cz], [x_process + abs(dx), y_process + abs(dy), z_process + abs(dz)]))
 
     if overlap_x > 0 and overlap_y > 0 and overlap_z > 0:
@@ -41,17 +41,17 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
             Player['WorldInteraction']['velocity'][1] = 0
             return [px, py, pz]
         if overlap_x < overlap_y and overlap_x < overlap_z and py <= (cy + 1.0):
-            if Debug:
+            if RENDER_FLAGS.get("Debug", False):
                 print("COLLISION X")
                 print(py, cy)
             Player['PlayerRelative']['on_ground'] = False
             px += overlap_x * (1 if dx > 0 else -1)
         elif overlap_y < overlap_z and py < (cy + 1.0):
-            if Debug:
+            if RENDER_FLAGS.get("Debug", False):
                 print("COLLISION Y")
             py += overlap_y * (1 if dy > 0 else -1)
         elif overlap_z < overlap_x and py < (cz + 1.0):
-            if Debug:
+            if RENDER_FLAGS.get("Debug", False):
                 print("COLLISION Z")
             Player['PlayerRelative']['on_ground'] = False
             pz += overlap_z * (1 if dz > 0 else -1)
@@ -60,7 +60,7 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
     return [px, py, pz]
 
 def display():
-    global Player, last_time, DebugElements, Debug
+    global Player, last_time, DebugElements, RENDER_FLAGS
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
@@ -73,6 +73,10 @@ def display():
     glRotatef(-Player['CameraRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
     glTranslatef(-Player['CameraRelative']['CameraPosition'][0], -Player['CameraRelative']['CameraPosition'][1], -Player['CameraRelative']['CameraPosition'][2])
 
+    INPUT_FLAGS.update({"Use_old_placement_mechanics": True})
+    SHAPE_FLAGS.update({"Load_texture": True})
+
+    RenderLight()
 
     if Player['PlayerRelative']['on_ground'] == False:
         Player['WorldInteraction']['velocity'][1] -= Player['WorldInteraction']['gravity'] * dt * 20
@@ -91,6 +95,8 @@ def display():
         Player['WorldInteraction']['velocity'][0] *= factor
         Player['WorldInteraction']['velocity'][2] *= factor
 
+    glEnable(GL_TEXTURE_2D)
+
     for element in WorldElements:
         draw_cube(element['position'][0], element['position'][1], element['position'][2])
         Player['PlayerRelative']['FeetPosition'] = resolve_collision(
@@ -99,7 +105,8 @@ def display():
             [element['position'][0], element['position'][1], element['position'][2]],
             [(element['size'][0] / 2), (element['size'][1] / 2), (element['size'][2] / 2)]
         )
-    if Debug:
+
+    if RENDER_FLAGS.get("Debug", False):
         for element in DebugElements:
             draw_wire_cube(
                 [element[0][0], element[0][1], element[0][2]],
@@ -111,8 +118,6 @@ def display():
     if Player['PlayerRelative']['FeetPosition'][1] <= 0.0:
         Player['WorldInteraction']['velocity'][1] = 0.0
         Player['PlayerRelative']['on_ground'] = True
-
-    INPUT_FLAGS.update({"Use_old_placement_mechanics": True})
 
     keyboard()
     update_camera()
@@ -142,7 +147,6 @@ glutInit()
 glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH)
 glutInitWindowSize(800, 600)
 glutCreateWindow(b"Engine")
-init()
 last_mouse_cursor = [glutGet(GLUT_WINDOW_WIDTH)//2, glutGet(GLUT_WINDOW_HEIGHT)//2]
 glutPassiveMotionFunc(mouse)
 glutDisplayFunc(display)

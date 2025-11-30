@@ -1,23 +1,37 @@
 from OpenGL.GL import *
+from RenderUI import load_texture
 
+SHAPE_FLAGS = {'Load_texture': True}
 
 def draw_cube(x, y, z):
+    if load_texture("stone.png").get(0):
+        glBindTexture(GL_TEXTURE_2D, load_texture("stone.png")[0])
     glBegin(GL_QUADS)
 
     # rouge (face avant)
-    glColor3f(1.0, 0.0, 0.0)
+    if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(1.0, 0.0, 0.0)
+    else: glColor3f(1.0, 1.0, 1.0)
     glNormal3f(0.0, 0.0, 1.0)
+    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord3f(-0.5, 0.0, 0.5)
     glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
+    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord3f(0.5, 0.0, 0.5)
     glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
+    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord3f(0.5, 1.0, 0.5)
     glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
+    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord3f(-0.5, 1.0, 0.5)
     glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
 
     # vert (face arrière)
-    glColor3f(0.0, 1.0, 0.0)
+    if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(0.0, 1.0, 0.0)
+    else: glColor3f(1.0, 1.0, 1.0)
     glNormal3f(0.0, 0.0, -1.0)
+    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord3f(-0.5, 0.0, -0.5)
     glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
+    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord3f(-0.5, 1.0, -0.5)
     glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
+    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord3f(0.5, 1.0, -0.5)
     glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
+    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord3f(0.5, 0.0, -0.5)
     glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
 
     # bleu (face gauche)
