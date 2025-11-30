@@ -4,8 +4,7 @@ from RenderUI import load_texture
 SHAPE_FLAGS = {'Load_texture': True}
 
 def draw_cube(x, y, z):
-    if load_texture("stone.png").get(0):
-        glBindTexture(GL_TEXTURE_2D, load_texture("stone.png")[0])
+    glBindTexture(GL_TEXTURE_2D, load_texture("stone.png")[0])
     glBegin(GL_QUADS)
 
     # rouge (face avant)
