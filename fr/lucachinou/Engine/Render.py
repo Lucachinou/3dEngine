@@ -14,7 +14,7 @@ def RenderLight():
 
     glEnable(GL_LIGHTING)
 
-    lightpos = [0.0, 5.0, 0.0, 1.0]
+    lightpos = [0.0, 2.0, 0.0, 1.0]
     lightcolor = [1.0, 1.0, 1.0, 1.0]
     glLightfv(GL_LIGHT0, GL_POSITION, lightpos)
     glLightfv(GL_LIGHT0, GL_AMBIENT, [0.3, 0.3, 0.3, 1.0])

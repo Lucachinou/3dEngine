@@ -8,7 +8,7 @@ from Render import WorldElements, RENDER_FLAGS
 last_mouse_cursor = [0, 0]
 angle = 0.0
 
-INPUT_FLAGS = {}
+INPUT_FLAGS = {"Use_old_placement_mechanics": True, "input_debug": True}
 
 def mouse(x, y):
     global last_mouse_cursor
@@ -35,6 +35,7 @@ def mouse_click(button, state, x, y):
             WorldElements.append({
                 'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 4), int(Player['CameraRelative']['CameraPosition'][1]  - forward[1] * 4), int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 4)],
                 'size': [1.0, 1.0, 1.0],
+                'texture': "stone.png",
             })
         elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
             try:
@@ -43,6 +44,7 @@ def mouse_click(button, state, x, y):
                                  int(Player['CameraRelative']['CameraPosition'][1] - forward[1] * 4),
                                  int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 4)],
                     'size': [1.0, 1.0, 1.0],
+                    'texture': "stone.png"
                 })
             except ValueError:
                 pass
@@ -88,10 +90,12 @@ def get_camera_right():
 def key_down(key, x, y):
     try: Player['Settings']['ActiveKeys'].add(key.decode('utf-8'))
     except KeyError: pass
+    except AttributeError: Player['Settings']['ActiveKeys'].add(key)
 
 def key_release(key, x, y):
     try: Player['Settings']['ActiveKeys'].remove(key.decode('utf-8'))
     except KeyError: pass
+    except AttributeError: Player['Settings']['ActiveKeys'].remove(key)
 
 def normalize(v):
     length = math.sqrt(v[0]**2 + v[2]**2)
@@ -107,6 +111,9 @@ def keyboard():
 
     right = get_camera_right()
     right = normalize((right[0], 0, right[2]))
+    if INPUT_FLAGS.get('input_debug', False):
+        print("Debugger Player activekey: "+str(Player['Settings']['ActiveKeys']))
+        print("Debugger Player rotation: "+str(forward)+" Right Direction: "+str(right))
     if 's' in Player['Settings']['ActiveKeys']:
         if Player['WorldInteraction']['velocity'][0] < Player['WorldInteraction']['max_walk_speed'] and Player['WorldInteraction']['velocity'][2] < Player['WorldInteraction']['max_walk_speed']:
             Player['WorldInteraction']['velocity'][0] += forward[0] * Player['WorldInteraction']['speed']
@@ -126,7 +133,7 @@ def keyboard():
     if '3' in Player['Settings']['ActiveKeys'] and 'H' in Player['Settings']['ActiveKeys']:
         RENDER_FLAGS['Debug'] = True
     if '3' in Player['Settings']['ActiveKeys'] and 'A' in Player['Settings']['ActiveKeys']:
-        RENDER_FLAGS['Debug'] = True
+        RENDER_FLAGS['Debug'] = False
     if ' ' in Player['Settings']['ActiveKeys']:
         if Player['PlayerRelative']['on_ground']:
             Player['WorldInteraction']['velocity'][1] = Player['WorldInteraction']['jump_strengh']

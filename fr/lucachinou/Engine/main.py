@@ -14,7 +14,6 @@ from RenderUI import *
 
 last_time = time.time()
 
-
 def resolve_collision(player_pos, player_half, cube_pos, cube_half):
     px, py, pz = player_pos
     cx, cy, cz = cube_pos
@@ -40,21 +39,21 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
             Player['PlayerRelative']['on_ground'] = True
             Player['WorldInteraction']['velocity'][1] = 0
             return [px, py, pz]
-        if overlap_x < overlap_y and overlap_x < overlap_z and py <= (cy + 1.0):
+        elif overlap_x < overlap_y and overlap_x < overlap_z and py <= (cy + 1.0):
             if RENDER_FLAGS.get("Debug", False):
                 print("COLLISION X")
                 print(py, cy)
-            Player['PlayerRelative']['on_ground'] = False
             px += overlap_x * (1 if dx > 0 else -1)
+            Player['PlayerRelative']['on_ground'] = False
         elif overlap_y < overlap_z and py < (cy + 1.0):
             if RENDER_FLAGS.get("Debug", False):
                 print("COLLISION Y")
             py += overlap_y * (1 if dy > 0 else -1)
-        elif overlap_z < overlap_x and py < (cz + 1.0):
+        elif overlap_z < overlap_y and py < (cz + 1.0):
             if RENDER_FLAGS.get("Debug", False):
                 print("COLLISION Z")
-            Player['PlayerRelative']['on_ground'] = False
             pz += overlap_z * (1 if dz > 0 else -1)
+            Player['PlayerRelative']['on_ground'] = False
         else:
             Player['PlayerRelative']['on_ground'] = False
     return [px, py, pz]
@@ -73,8 +72,9 @@ def display():
     glRotatef(-Player['CameraRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
     glTranslatef(-Player['CameraRelative']['CameraPosition'][0], -Player['CameraRelative']['CameraPosition'][1], -Player['CameraRelative']['CameraPosition'][2])
 
-    INPUT_FLAGS.update({"Use_old_placement_mechanics": True})
+    INPUT_FLAGS.update({"Use_old_placement_mechanics": True, "input_debug": False})
     SHAPE_FLAGS.update({"Load_texture": True})
+    RENDER_FLAGS.update({"Debug": True})
 
     RenderLight()
 
@@ -98,10 +98,10 @@ def display():
     glEnable(GL_TEXTURE_2D)
 
     for element in WorldElements:
-        draw_cube(element['position'][0], element['position'][1], element['position'][2])
+        draw_cube(element['position'][0], element['position'][1], element['position'][2], element['texture'])
         Player['PlayerRelative']['FeetPosition'] = resolve_collision(
             Player['PlayerRelative']['FeetPosition'],
-            [0.25, 0.9, 0.25],
+            [0.2, 0.9, 0.2],
             [element['position'][0], element['position'][1], element['position'][2]],
             [(element['size'][0] / 2), (element['size'][1] / 2), (element['size'][2] / 2)]
         )
@@ -137,10 +137,12 @@ def update_camera():
 WorldElements.append({
     'position': [0.0, -2.0, 0.0],
     'size': [1.0, 1.0, 1.0],
+    'texture': 'stone.png',
 })
 WorldElements.append({
     'position': [0.0, -1.0, 2.0],
     'size': [1.0, 1.0, 1.0],
+    'texture': 'stone.png',
 })
 
 glutInit()
@@ -152,8 +154,13 @@ glutPassiveMotionFunc(mouse)
 glutDisplayFunc(display)
 glutIdleFunc(display)
 
+glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION)
+
 glutKeyboardFunc(key_down)
 glutKeyboardUpFunc(key_release)
+
+glutSpecialFunc(key_down)
+glutSpecialUpFunc(key_release)
 
 glutReshapeFunc(reshape)
 glutMouseFunc(mouse_click)

@@ -2,9 +2,10 @@ Player = {
     'WorldInteraction': {
         'speed': 0.002,
         'gravity': 0.08,
-        'friction': 15.0,
+        'friction': 10.0,
         'jump_strengh': 0.45,
-        'max_walk_speed': 0.4,
+        'max_walk_speed': 1.0,
+        'max_sprint_speed': 1.5,
         'velocity': [0.0, 0.0, 0.0],
     },
     'CameraRelative': {
