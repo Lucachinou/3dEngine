@@ -10,14 +10,16 @@ RENDER_FLAGS = {'Debug': False}
 def RenderLight():
     glClearColor(0.1, 0.4, 0.9, 0.7)
     glEnable(GL_DEPTH_TEST)
+    glEnable(GL_NORMALIZE)
     glShadeModel(GL_SMOOTH)
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE)
 
     glEnable(GL_LIGHTING)
 
     lightpos = [0.0, 2.0, 0.0, 1.0]
     lightcolor = [1.0, 1.0, 1.0, 1.0]
     glLightfv(GL_LIGHT0, GL_POSITION, lightpos)
-    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.3, 0.3, 0.3, 1.0])
+    glLightfv(GL_LIGHT0, GL_AMBIENT, [0.05, 0.05, 0.05, 1.0])
     glLightfv(GL_LIGHT0, GL_DIFFUSE, lightcolor)
     glLightfv(GL_LIGHT0, GL_SPECULAR, lightcolor)
 

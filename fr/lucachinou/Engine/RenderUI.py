@@ -37,6 +37,27 @@ def end_ortho():
     glMatrixMode(GL_MODELVIEW)
     glPopMatrix()
 
+def draw_text_2d(x, y, text, font=GLUT_BITMAP_HELVETICA_18):
+    y = glutGet(GLUT_WINDOW_HEIGHT) - y
+
+    glMatrixMode(GL_PROJECTION)
+    glPushMatrix()
+    glLoadIdentity()
+    glOrtho(0, glutGet(GLUT_WINDOW_WIDTH), 0, glutGet(GLUT_WINDOW_HEIGHT), -1, 1)
+
+    glMatrixMode(GL_MODELVIEW)
+    glPushMatrix()
+    glLoadIdentity()
+
+    glRasterPos2f(x, y)
+    for ch in text:
+        glutBitmapCharacter(font, ord(ch))
+
+    glPopMatrix()
+    glMatrixMode(GL_PROJECTION)
+    glPopMatrix()
+    glMatrixMode(GL_MODELVIEW)
+
 def draw_crosshair(texture, tw, th, screen_width, screen_height):
     glEnable(GL_TEXTURE_2D)
     glEnable(GL_BLEND)

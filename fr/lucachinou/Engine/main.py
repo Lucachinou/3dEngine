@@ -23,9 +23,9 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
     dy = py - cy
     dz = pz - cz
 
-    x_process = (player_half[0] * 2 + cube_half[0]) - abs(dx)
+    x_process = (player_half[0] + cube_half[0]) - abs(dx)
     y_process = (player_half[1] + cube_half[1]) - abs(dy)
-    z_process = (player_half[2] * 2 + cube_half[2]) - abs(dz)
+    z_process = (player_half[2] + cube_half[2]) - abs(dz)
 
     overlap_x = x_process
     overlap_y = y_process
@@ -34,28 +34,33 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
     if RENDER_FLAGS.get("Debug", False):
         DebugElements.append(([cx, cy, cz], [x_process + abs(dx), y_process + abs(dy), z_process + abs(dz)]))
 
+    on_ground_per_frame = False
+
+    epsilon = 0.01
     if overlap_x > 0 and overlap_y > 0 and overlap_z > 0:
-        if dy > 0 and overlap_y < overlap_x and overlap_y < overlap_z:
-            Player['PlayerRelative']['on_ground'] = True
-            Player['WorldInteraction']['velocity'][1] = 0
-            return [px, py, pz]
-        elif overlap_x < overlap_y and overlap_x < overlap_z and py <= (cy + 1.0):
+        overlap_min = min(overlap_x, overlap_y, overlap_z)
+
+        if overlap_min == overlap_y:
+            if dy > 0:
+                py += overlap_y
+                on_ground_per_frame = True
+                Player['WorldInteraction']['velocity'][1] = 0
+                print(f"DY: {dy}, on_ground: {on_ground_per_frame}")
+            else:
+                py -= overlap_y
+                on_ground_per_frame = False
+        elif overlap_min == overlap_x:
             if RENDER_FLAGS.get("Debug", False):
                 print("COLLISION X")
                 print(py, cy)
             px += overlap_x * (1 if dx > 0 else -1)
-            Player['PlayerRelative']['on_ground'] = False
-        elif overlap_y < overlap_z and py < (cy + 1.0):
-            if RENDER_FLAGS.get("Debug", False):
-                print("COLLISION Y")
-            py += overlap_y * (1 if dy > 0 else -1)
-        elif overlap_z < overlap_y and py < (cz + 1.0):
+            on_ground_per_frame = False
+        elif overlap_min == overlap_z:
             if RENDER_FLAGS.get("Debug", False):
                 print("COLLISION Z")
             pz += overlap_z * (1 if dz > 0 else -1)
-            Player['PlayerRelative']['on_ground'] = False
-        else:
-            Player['PlayerRelative']['on_ground'] = False
+            on_ground_per_frame = False
+    Player['PlayerRelative']['on_ground'] = on_ground_per_frame
     return [px, py, pz]
 
 def display():
@@ -74,9 +79,7 @@ def display():
 
     INPUT_FLAGS.update({"Use_old_placement_mechanics": True, "input_debug": False})
     SHAPE_FLAGS.update({"Load_texture": True})
-    RENDER_FLAGS.update({"Debug": True})
-
-    RenderLight()
+    RENDER_FLAGS.update({"Debug": False})
 
     if Player['PlayerRelative']['on_ground'] == False:
         Player['WorldInteraction']['velocity'][1] -= Player['WorldInteraction']['gravity'] * dt * 20
@@ -106,6 +109,8 @@ def display():
             [(element['size'][0] / 2), (element['size'][1] / 2), (element['size'][2] / 2)]
         )
 
+    RenderLight()
+
     if RENDER_FLAGS.get("Debug", False):
         for element in DebugElements:
             draw_wire_cube(
@@ -123,6 +128,9 @@ def display():
     update_camera()
 
     begin_ortho(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT))
+    FeetRound = float(f"{Player['PlayerRelative']['FeetPosition'][0]:.3g}"), float(f"{Player['PlayerRelative']['FeetPosition'][1]:.3g}"), float(f"{Player['PlayerRelative']['FeetPosition'][2]:.3g}")
+    draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}")
+
     draw_crosshair(*load_texture("crosshair.png"), glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT))
     end_ortho()
 
@@ -135,12 +143,12 @@ def update_camera():
     Player['CameraRelative']['CameraPosition'][2] = fz
 
 WorldElements.append({
-    'position': [0.0, -2.0, 0.0],
+    'position': [0.0, -1.0, 0.0],
     'size': [1.0, 1.0, 1.0],
     'texture': 'stone.png',
 })
 WorldElements.append({
-    'position': [0.0, -1.0, 2.0],
+    'position': [0.0, 0.0, 2.0],
     'size': [1.0, 1.0, 1.0],
     'texture': 'stone.png',
 })
