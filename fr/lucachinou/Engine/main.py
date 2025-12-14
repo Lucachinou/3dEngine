@@ -41,7 +41,7 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
         overlap_min = min(overlap_x, overlap_y, overlap_z)
 
         if overlap_min == overlap_y:
-            if dy > 0:
+            if dy > epsilon:
                 py += overlap_y
                 on_ground_per_frame = True
                 Player['WorldInteraction']['velocity'][1] = 0
@@ -60,7 +60,7 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
                 print("COLLISION Z")
             pz += overlap_z * (1 if dz > 0 else -1)
             on_ground_per_frame = False
-    Player['PlayerRelative']['on_ground'] = on_ground_per_frame
+    #Player['PlayerRelative']['on_ground'] = on_ground_per_frame
     return [px, py, pz]
 
 def display():
