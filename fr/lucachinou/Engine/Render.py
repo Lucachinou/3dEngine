@@ -2,10 +2,26 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
+import Render_Shape
+import Player
 
 WorldElements = []
 DebugElements = []
 RENDER_FLAGS = {'Debug': False}
+
+def Render_Elements_Collisions():
+    if RENDER_FLAGS.get("Debug", False):
+        for element in DebugElements:
+            Render_Shape.draw_wire_cube(
+                [element[0][0], element[0][1], element[0][2]],
+                [(element[1][0] / 2), (element[1][1] / 2), (element[1][2] / 2)]
+            )
+
+def update_camera():
+    fx, fy, fz = Player.Player['PlayerRelative']['FeetPosition']
+    Player.Player['CameraRelative']['CameraPosition'][0] = fx
+    Player.Player['CameraRelative']['CameraPosition'][1] = fy + Player.Player['CameraRelative']['CameraHeight']
+    Player.Player['CameraRelative']['CameraPosition'][2] = fz
 
 def RenderLight():
     glClearColor(0.1, 0.4, 0.9, 0.7)

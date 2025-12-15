@@ -3,7 +3,15 @@ from RenderUI import load_texture
 
 from pathlib import Path
 
+import Render
+
 SHAPE_FLAGS = {'Load_texture': True}
+
+def is_block_exist(x, y, z) -> bool:
+    for element in Render.WorldElements:
+        if element['position'][0] == x and element['position'][1] == y and element['position'][2] == z:
+            return True
+    return False
 
 def draw_cube(x, y, z, tex_id):
     if not Path(__file__).parent / "assets" / tex_id:
@@ -11,83 +19,93 @@ def draw_cube(x, y, z, tex_id):
     glBindTexture(GL_TEXTURE_2D, load_texture(tex_id)[0])
     glBegin(GL_QUADS)
 
+
+
     # rouge (face avant)
-    if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(1.0, 0.0, 0.0)
-    else: glColor3f(1.0, 1.0, 1.0)
-    glNormal3f(0.0, 0.0, 1.0)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(-0.5, 0.0,)
-    glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.5, 0.0)
-    glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.5, 1.0)
-    glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(-0.5, 1.0)
-    glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
+    if not is_block_exist(x, y, z + 1):
+        if not SHAPE_FLAGS.get('Load_texture', False):
+            glColor3f(1.0, 0.0, 0.0)
+        else:
+            glColor3f(1.0, 1.0, 1.0)
+        glNormal3f(0.0, 0.0, 1.0)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(-0.5, 0.0, )
+        glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.5, 0.0)
+        glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.5, 1.0)
+        glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(-0.5, 1.0)
+        glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
 
     # vert (face arrière)
-    if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(0.0, 1.0, 0.0)
-    else: glColor3f(1.0, 1.0, 1.0)
-    glNormal3f(0.0, 0.0, -1.0)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(-0.5, 0.0)
-    glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(-0.5, 1.0)
-    glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.5, 1.0)
-    glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.5, 0.0)
-    glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
+    if not is_block_exist(x, y, z - 1):
+        if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(0.0, 1.0, 0.0)
+        else: glColor3f(1.0, 1.0, 1.0)
+        glNormal3f(0.0, 0.0, -1.0)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(-0.5, 0.0)
+        glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(-0.5, 1.0)
+        glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.5, 1.0)
+        glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.5, 0.0)
+        glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
 
     # bleu (face gauche)
-    if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(0.0, 0.0, 1.0)
-    else: glColor3f(1.0, 1.0, 1.0)
-    glNormal3f(-1.0, 0.0, 0.0)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 0.0)
-    glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 0.0)
-    glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 1.0)
-    glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 1.0)
-    glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
+    if not is_block_exist(x - 1, y, z):
+        if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(0.0, 0.0, 1.0)
+        else: glColor3f(1.0, 1.0, 1.0)
+        glNormal3f(-1.0, 0.0, 0.0)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 0.0)
+        glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 0.0)
+        glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 1.0)
+        glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 1.0)
+        glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
 
     # jaune (face droite)
-    if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(1.0, 1.0, 0.0)
-    else: glColor3f(1.0, 1.0, 1.0)
-    glNormal3f(1.0, 0.0, 0.0)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 0.0)
-    glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 1.0)
-    glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 1.0)
-    glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 0.0)
-    glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
+    if not is_block_exist(x + 1, y, z):
+        if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(1.0, 1.0, 0.0)
+        else: glColor3f(1.0, 1.0, 1.0)
+        glNormal3f(1.0, 0.0, 0.0)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 0.0)
+        glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 1.0)
+        glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 1.0)
+        glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 0.0)
+        glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
 
     # cyan (face haut)
-    if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(0.0, 1.0, 1.0)
-    else: glColor3f(1.0, 1.0, 1.0)
-    glNormal3f(0.0, 1.0, 0.0)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 0.0)
-    glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 1.0)
-    glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 1.0)
-    glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 0.0)
-    glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
+    if not is_block_exist(x, y + 1, z):
+        if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(0.0, 1.0, 1.0)
+        else: glColor3f(1.0, 1.0, 1.0)
+        glNormal3f(0.0, 1.0, 0.0)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 0.0)
+        glVertex3f(-0.5 + x, 1.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 1.0)
+        glVertex3f(0.5 + x, 1.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 1.0)
+        glVertex3f(0.5 + x, 1.0 + y, 0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 0.0)
+        glVertex3f(-0.5 + x, 1.0 + y, 0.5 + z)
 
     # magenta (face bas)
-    if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(1.0, 0.0, 1.0)
-    else: glColor3f(1.0, 1.0, 1.0)
-    glNormal3f(0.0, -1.0, 0.0)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 0.0)
-    glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 1.0)
-    glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 1.0)
-    glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
-    if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 0.0)
-    glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
+    if not is_block_exist(x, y - 1, z):
+        if not SHAPE_FLAGS.get('Load_texture', False): glColor3f(1.0, 0.0, 1.0)
+        else: glColor3f(1.0, 1.0, 1.0)
+        glNormal3f(0.0, -1.0, 0.0)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 0.0)
+        glVertex3f(-0.5 + x, 0.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(0.0, 1.0)
+        glVertex3f(0.5 + x, 0.0 + y, -0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 1.0)
+        glVertex3f(0.5 + x, 0.0 + y, 0.5 + z)
+        if SHAPE_FLAGS.get('Load_texture', False): glTexCoord2f(1.0, 0.0)
+        glVertex3f(-0.5 + x, 0.0 + y, 0.5 + z)
 
     glEnd()
 

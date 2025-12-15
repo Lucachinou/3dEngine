@@ -123,13 +123,11 @@ def keyboard():
             Player['WorldInteraction']['velocity'][0] -= forward[0] * Player['WorldInteraction']['speed']
             Player['WorldInteraction']['velocity'][2] -= forward[2] * Player['WorldInteraction']['speed']
     if 'd' in Player['Settings']['ActiveKeys']:
-        if Player['WorldInteraction']['velocity'][0] < Player['WorldInteraction']['max_walk_speed'] and Player['WorldInteraction']['velocity'][2] < Player['WorldInteraction']['max_walk_speed']:
-            Player['WorldInteraction']['velocity'][0] += right[0] * Player['WorldInteraction']['speed']
-            Player['WorldInteraction']['velocity'][2] += right[2] * Player['WorldInteraction']['speed']
+        Player['WorldInteraction']['velocity'][0] += right[0] * Player['WorldInteraction']['speed']
+        Player['WorldInteraction']['velocity'][2] += right[2] * Player['WorldInteraction']['speed']
     if 'q' in Player['Settings']['ActiveKeys']:
-        if Player['WorldInteraction']['velocity'][0] < Player['WorldInteraction']['max_walk_speed'] and Player['WorldInteraction']['velocity'][2] < Player['WorldInteraction']['max_walk_speed']:
-            Player['WorldInteraction']['velocity'][0] -= right[0] * Player['WorldInteraction']['speed']
-            Player['WorldInteraction']['velocity'][2] -= right[2] * Player['WorldInteraction']['speed']
+        Player['WorldInteraction']['velocity'][0] -= right[0] * Player['WorldInteraction']['speed']
+        Player['WorldInteraction']['velocity'][2] -= right[2] * Player['WorldInteraction']['speed']
     if '3' in Player['Settings']['ActiveKeys'] and 'H' in Player['Settings']['ActiveKeys']:
         RENDER_FLAGS['Debug'] = True
     if '3' in Player['Settings']['ActiveKeys'] and 'A' in Player['Settings']['ActiveKeys']:

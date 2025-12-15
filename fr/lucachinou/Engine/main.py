@@ -6,172 +6,90 @@ from OpenGL.GL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
 
-from Player import *
-from Input import *
-from Render_Shape import *
-from Render import *
-from RenderUI import *
-
-last_time = time.time()
-
-def resolve_collision(player_pos, player_half, cube_pos, cube_half):
-    px, py, pz = player_pos
-    cx, cy, cz = cube_pos
-    cy += 0.5
-
-    dx = px - cx
-    dy = py - cy
-    dz = pz - cz
-
-    x_process = (player_half[0] + cube_half[0]) - abs(dx)
-    y_process = (player_half[1] + cube_half[1]) - abs(dy)
-    z_process = (player_half[2] + cube_half[2]) - abs(dz)
-
-    overlap_x = x_process
-    overlap_y = y_process
-    overlap_z = z_process
-
-    if RENDER_FLAGS.get("Debug", False):
-        DebugElements.append(([cx, cy, cz], [x_process + abs(dx), y_process + abs(dy), z_process + abs(dz)]))
-
-    on_ground_per_frame = False
-
-    epsilon = 0.01
-    if overlap_x > 0 and overlap_y > 0 and overlap_z > 0:
-        overlap_min = min(overlap_x, overlap_y, overlap_z)
-
-        if overlap_min == overlap_y:
-            if dy > epsilon and Player['WorldInteraction']['velocity'][1] <= 0:
-                py += overlap_y
-                on_ground_per_frame = True
-                Player['WorldInteraction']['velocity'][1] = 0
-            else:
-                py -= overlap_y
-                on_ground_per_frame = False
-        elif overlap_min == overlap_x:
-            if RENDER_FLAGS.get("Debug", False):
-                print("COLLISION X")
-                print(py, cy)
-            px += overlap_x * (1 if dx > 0 else -1)
-            on_ground_per_frame = False
-        elif overlap_min == overlap_z:
-            if RENDER_FLAGS.get("Debug", False):
-                print("COLLISION Z")
-            pz += overlap_z * (1 if dz > 0 else -1)
-            on_ground_per_frame = False
-    Player['PlayerRelative']['on_ground'] |= on_ground_per_frame
-    return [px, py, pz]
+import Player as Player
+import Input as Input
+import Render_Shape as Render_Shape
+import Render as Render
+import RenderUI as RenderUI
+import Physics as Physics
 
 def display():
-    global Player, last_time, DebugElements, RENDER_FLAGS
-
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     glLoadIdentity()
 
-    now = time.time()
-    dt = now - last_time
-    last_time = now
+    glRotatef(-Player.Player['CameraRelative']['CameraRotation'][0], -1.0, 0.0, 0.0)
+    glRotatef(-Player.Player['CameraRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
+    glTranslatef(-Player.Player['CameraRelative']['CameraPosition'][0], -Player.Player['CameraRelative']['CameraPosition'][1], -Player.Player['CameraRelative']['CameraPosition'][2])
 
-    glRotatef(-Player['CameraRelative']['CameraRotation'][0], -1.0, 0.0, 0.0)
-    glRotatef(-Player['CameraRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
-    glTranslatef(-Player['CameraRelative']['CameraPosition'][0], -Player['CameraRelative']['CameraPosition'][1], -Player['CameraRelative']['CameraPosition'][2])
-
-    INPUT_FLAGS.update({"Use_old_placement_mechanics": True, "input_debug": False})
-    SHAPE_FLAGS.update({"Load_texture": True})
-    RENDER_FLAGS.update({"Debug": False})
-
-    if Player['PlayerRelative']['on_ground'] == False:
-        Player['WorldInteraction']['velocity'][1] -= Player['WorldInteraction']['gravity'] * dt * 20
-
-    for i in [0, 2]:
-        Player['WorldInteraction']['velocity'][i] *= (1 - Player['WorldInteraction']['friction'] * dt)
-
-    Player['PlayerRelative']['FeetPosition'][0] += Player['WorldInteraction']['velocity'][0] * dt * 20
-    Player['PlayerRelative']['FeetPosition'][1] += Player['WorldInteraction']['velocity'][1] * dt * 20
-    Player['PlayerRelative']['FeetPosition'][2] += Player['WorldInteraction']['velocity'][2] * dt * 20
-
-    vx, vy, vz = Player['WorldInteraction']['velocity']
-    speed = math.sqrt(vx * vx + vz * vz)
-    if speed > Player['WorldInteraction']['max_walk_speed']:
-        factor = Player['WorldInteraction']['max_walk_speed'] / speed
-        Player['WorldInteraction']['velocity'][0] *= factor
-        Player['WorldInteraction']['velocity'][2] *= factor
+    Input.INPUT_FLAGS.update({"Use_old_placement_mechanics": True, "input_debug": False})
+    Render_Shape.SHAPE_FLAGS.update({"Load_texture": True})
+    Render.RENDER_FLAGS.update({"Debug": False})
 
     glEnable(GL_TEXTURE_2D)
+    Physics.process_delta()
 
-    Player['PlayerRelative']['on_ground'] = False
+    Physics.Apply_Gravity()
+    Physics.Apply_Velocity()
 
-    for element in WorldElements:
-        draw_cube(element['position'][0], element['position'][1], element['position'][2], element['texture'])
-        Player['PlayerRelative']['FeetPosition'] = resolve_collision(
-            Player['PlayerRelative']['FeetPosition'],
-            [0.2, 0.9, 0.2],
-            [element['position'][0], element['position'][1], element['position'][2]],
-            [(element['size'][0] / 2), (element['size'][1] / 2), (element['size'][2] / 2)]
-        )
+    Player.Player['PlayerRelative']['on_ground'] = False
 
-    RenderLight()
+    Physics.Apply_Elements_Collisions()
 
-    if RENDER_FLAGS.get("Debug", False):
-        for element in DebugElements:
-            draw_wire_cube(
-                [element[0][0], element[0][1], element[0][2]],
-                [(element[1][0] / 2), (element[1][1] / 2), (element[1][2] / 2)]
-            )
+    Render.RenderLight()
 
-    DebugElements = []
+    Render.Render_Elements_Collisions()
 
-    if Player['PlayerRelative']['FeetPosition'][1] <= 0.0:
-        Player['WorldInteraction']['velocity'][1] = 0.0
-        Player['PlayerRelative']['on_ground'] = True
+    Physics.Apply_Ghost_Platform()
 
-    keyboard()
-    update_camera()
+    Input.keyboard()
+    Render.update_camera()
 
-    begin_ortho(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT))
-    FeetRound = float(f"{Player['PlayerRelative']['FeetPosition'][0]:.3g}"), float(f"{Player['PlayerRelative']['FeetPosition'][1]:.3g}"), float(f"{Player['PlayerRelative']['FeetPosition'][2]:.3g}")
-    draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}")
+    RenderUI.begin_ortho(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT))
+    FeetRound = float(f"{Player.Player['PlayerRelative']['FeetPosition'][0]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][1]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][2]:.3g}")
+    RenderUI.draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}")
 
-    draw_crosshair(*load_texture("crosshair.png"), glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT))
-    end_ortho()
+    RenderUI.draw_crosshair(*RenderUI.load_texture("crosshair.png"), glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT))
+    RenderUI.end_ortho()
 
     glutSwapBuffers()
 
-def update_camera():
-    fx, fy, fz = Player['PlayerRelative']['FeetPosition']
-    Player['CameraRelative']['CameraPosition'][0] = fx
-    Player['CameraRelative']['CameraPosition'][1] = fy + Player['CameraRelative']['CameraHeight']
-    Player['CameraRelative']['CameraPosition'][2] = fz
-
-WorldElements.append({
+Render.WorldElements.append({
     'position': [0.0, -1.0, 0.0],
     'size': [1.0, 1.0, 1.0],
     'texture': 'stone.png',
 })
-WorldElements.append({
+Render.WorldElements.append({
     'position': [0.0, 0.0, 2.0],
     'size': [1.0, 1.0, 1.0],
     'texture': 'stone.png',
 })
-
+"""
+for x in range(10):
+    for z in range(10):
+        Render.WorldElements.append({
+            'position': [float(x), -1.0, float(z)],
+            'size': [1.0, 1.0, 1.0],
+            'texture': 'stone.png',
+        })
+"""
 glutInit()
 glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH)
 glutInitWindowSize(800, 600)
 glutCreateWindow(b"Engine")
 last_mouse_cursor = [glutGet(GLUT_WINDOW_WIDTH)//2, glutGet(GLUT_WINDOW_HEIGHT)//2]
-glutPassiveMotionFunc(mouse)
+glutPassiveMotionFunc(Input.mouse)
 glutDisplayFunc(display)
 glutIdleFunc(display)
 
 glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION)
 
-glutKeyboardFunc(key_down)
-glutKeyboardUpFunc(key_release)
+glutKeyboardFunc(Input.key_down)
+glutKeyboardUpFunc(Input.key_release)
 
-glutSpecialFunc(key_down)
-glutSpecialUpFunc(key_release)
+glutSpecialFunc(Input.key_down)
+glutSpecialUpFunc(Input.key_release)
 
-glutReshapeFunc(reshape)
-glutMouseFunc(mouse_click)
+glutReshapeFunc(Render.reshape)
+glutMouseFunc(Input.mouse_click)
 glutSetCursor(GLUT_CURSOR_NONE)
 glutMainLoop()
