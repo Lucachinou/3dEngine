@@ -41,6 +41,10 @@ def Apply_Gravity():
     for i in [0, 2]:
         Player.Player['WorldInteraction']['velocity'][i] *= (1 - Player.Player['WorldInteraction']['friction'] * delta)
 
+def Void_death():
+    if Player.Player['PlayerRelative']['FeetPosition'][1] <= 0.0:
+        Player.Player['PlayerRelative']['FeetPosition'] = [0.0, 1.5, 0.0]
+
 def Apply_Elements_Collisions():
     for element in Render.WorldElements:
         Render_Shape.draw_cube(element['position'][0], element['position'][1], element['position'][2], element['texture'])

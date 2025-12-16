@@ -39,10 +39,11 @@ def display():
 
     Render.Render_Elements_Collisions()
 
-    Physics.Apply_Ghost_Platform()
+    #Physics.Apply_Ghost_Platform() Useless due to the default stone platform
 
     Input.keyboard()
     Render.update_camera()
+    Physics.Void_death()
 
     RenderUI.begin_ortho(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT))
     FeetRound = float(f"{Player.Player['PlayerRelative']['FeetPosition'][0]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][1]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][2]:.3g}")
@@ -53,29 +54,20 @@ def display():
 
     glutSwapBuffers()
 
-Render.WorldElements.append({
-    'position': [0.0, -1.0, 0.0],
-    'size': [1.0, 1.0, 1.0],
-    'texture': 'stone.png',
-})
-Render.WorldElements.append({
-    'position': [0.0, 0.0, 2.0],
-    'size': [1.0, 1.0, 1.0],
-    'texture': 'stone.png',
-})
-"""
-for x in range(10):
-    for z in range(10):
+for x in range(-5, 5):
+    for z in range(-5, 5):
         Render.WorldElements.append({
             'position': [float(x), -1.0, float(z)],
             'size': [1.0, 1.0, 1.0],
-            'texture': 'stone.png',
+            'texture': 'stone',
         })
-"""
 glutInit()
 glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH)
 glutInitWindowSize(800, 600)
 glutCreateWindow(b"Engine")
+
+Render_Shape.Load_Texture()
+
 last_mouse_cursor = [glutGet(GLUT_WINDOW_WIDTH)//2, glutGet(GLUT_WINDOW_HEIGHT)//2]
 glutPassiveMotionFunc(Input.mouse)
 glutDisplayFunc(display)

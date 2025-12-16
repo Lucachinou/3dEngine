@@ -14,8 +14,9 @@ Player = {
         'CameraHeight': 0.7,
     },
     'PlayerRelative': {
+        'Health': 20.0,
         'Scale': 1.0,
-        'FeetPosition': [0.0, 0.0, 0.0],
+        'FeetPosition': [0.0, 1.5, 0.0],
         'on_ground': True,
         'Inventory': {},
     },

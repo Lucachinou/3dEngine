@@ -5,7 +5,14 @@ from pathlib import Path
 
 import Render
 
+Asset_file = Path(__file__).parent / "Assets"
+Textures = {}
 SHAPE_FLAGS = {'Load_texture': True}
+
+def Load_Texture():
+    for texture in Asset_file.iterdir():
+        if texture.is_file():
+            Textures[texture.stem] = load_texture(texture)
 
 def is_block_exist(x, y, z) -> bool:
     for element in Render.WorldElements:
@@ -13,13 +20,10 @@ def is_block_exist(x, y, z) -> bool:
             return True
     return False
 
+#TODO: Replace this with a VBO, VAO system
 def draw_cube(x, y, z, tex_id):
-    if not Path(__file__).parent / "assets" / tex_id:
-        return "NOT FOUND"
-    glBindTexture(GL_TEXTURE_2D, load_texture(tex_id)[0])
+    glBindTexture(GL_TEXTURE_2D, Textures[tex_id][0])
     glBegin(GL_QUADS)
-
-
 
     # rouge (face avant)
     if not is_block_exist(x, y, z + 1):

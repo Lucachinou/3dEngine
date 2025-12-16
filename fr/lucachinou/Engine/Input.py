@@ -4,6 +4,7 @@ from OpenGL.GLUT import *
 
 from Player import *
 from Render import WorldElements, RENDER_FLAGS
+from fr.lucachinou.Engine.Render_Shape import is_block_exist
 
 last_mouse_cursor = [0, 0]
 angle = 0.0
@@ -35,7 +36,7 @@ def mouse_click(button, state, x, y):
             WorldElements.append({
                 'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 4), int(Player['CameraRelative']['CameraPosition'][1]  - forward[1] * 4), int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 4)],
                 'size': [1.0, 1.0, 1.0],
-                'texture': "stone.png",
+                'texture': "stone",
             })
         elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
             try:
@@ -44,7 +45,7 @@ def mouse_click(button, state, x, y):
                                  int(Player['CameraRelative']['CameraPosition'][1] - forward[1] * 4),
                                  int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 4)],
                     'size': [1.0, 1.0, 1.0],
-                    'texture': "stone.png"
+                    'texture': "stone"
                 })
             except ValueError:
                 pass
@@ -52,11 +53,17 @@ def mouse_click(button, state, x, y):
         forward = get_camera_forward()
         px, py, pz = Player['CameraRelative']['CameraPosition']
 
-        target_x = px + (1 if -forward[0] > 0 else -1) * math.floor(abs(forward[0] * 4))
-        target_y = py + (1 if -forward[1] > 0 else -1) * math.floor(abs(forward[1] * 4))
-        target_z = pz + (1 if -forward[2] > 0 else -1) * math.floor(abs(forward[2] * 4))
+        target_x = None
+        target_y = None
+        target_z = None
+        for x, y in enumerate(forward):
+            target_x = px + (1 if -forward[0] > 0 else -1) * math.floor(abs(forward[0]) * x)
+            target_y = py + (1 if -forward[1] > 0 else -1) * math.floor(abs(forward[1]) * y)
+            target_z = pz + (1 if -forward[2] > 0 else -1) * math.floor(abs(forward[2]) * z)
 
-        block_target = {"position": [int(target_x), int(target_y), int(target_z)], "size": [1.0, 1.0, 1.0]}
+
+
+        block_target = {"position": [int(target_x), int(target_y), int(target_z)], "size": [1.0, 1.0, 1.0], "texture": "stone"}
 
         if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
             WorldElements.append(block_target)
