@@ -1,3 +1,5 @@
 # 3dEngine | Alpha status
 
-*work in progress*
+*Basic collision system: Ready*
+*Main menu: NOT READY*
+*Basic UI system: Ready*
