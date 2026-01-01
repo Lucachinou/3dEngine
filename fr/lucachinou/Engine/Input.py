@@ -1,17 +1,16 @@
 import math
-
-from OpenGL.GLUT import *
+import glfw
 
 from Player import *
-from Render import WorldElements, RENDER_FLAGS
-from fr.lucachinou.Engine.Render_Shape import is_block_exist
+from Render import WorldElements
+from Render_Shape import is_block_exist
 
 last_mouse_cursor = [0, 0]
 angle = 0.0
 
 INPUT_FLAGS = {"Use_old_placement_mechanics": True, "input_debug": True}
 
-def mouse(x, y):
+def mouse(window, x, y, winheight, winwidth):
     global last_mouse_cursor
 
     dx = last_mouse_cursor[0] - x
@@ -22,23 +21,21 @@ def mouse(x, y):
 
     Player['CameraRelative']['CameraRotation'][0] = max(-89.0, min(89.0, Player['CameraRelative']['CameraRotation'][0]))
 
-    width = glutGet(GLUT_WINDOW_WIDTH)
-    height = glutGet(GLUT_WINDOW_HEIGHT)
-    glutWarpPointer(width//2, height//2)
+    width = winwidth
+    height = winheight
+    glfw.set_cursor_pos(window, width // 2, height // 2)
     last_mouse_cursor = [width//2, height//2]
-
-    glutPostRedisplay()
 
 def mouse_click(button, state, x, y):
     if INPUT_FLAGS.get('Use_old_placement_mechanics', False):
         forward = get_camera_forward()
-        if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+        if button == glfw.MOUSE_BUTTON_1 and state == glfw.PRESS:
             WorldElements.append({
                 'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 4), int(Player['CameraRelative']['CameraPosition'][1]  - forward[1] * 4), int(Player['CameraRelative']['CameraPosition'][2] - forward[2] * 4)],
                 'size': [1.0, 1.0, 1.0],
                 'texture': "stone",
             })
-        elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
+        elif button == glfw.MOUSE_BUTTON_2 and state == glfw.PRESS:
             try:
                 WorldElements.remove({
                     'position': [int(Player['CameraRelative']['CameraPosition'][0] - forward[0] * 4),
@@ -65,9 +62,9 @@ def mouse_click(button, state, x, y):
 
         block_target = {"position": [int(target_x), int(target_y), int(target_z)], "size": [1.0, 1.0, 1.0], "texture": "stone"}
 
-        if button == GLUT_LEFT_BUTTON and state == GLUT_DOWN:
+        if button == glfw.MOUSE_BUTTON_1 and state == glfw.PRESS:
             WorldElements.append(block_target)
-        elif button == GLUT_RIGHT_BUTTON and state == GLUT_DOWN:
+        elif button == glfw.MOUSE_BUTTON_2 and state == glfw.PRESS:
             try:
                 WorldElements.remove(block_target)
             except ValueError:
@@ -94,13 +91,13 @@ def get_camera_right():
     length = math.sqrt(right[0]**2 + right[1]**2 + right[2]**2)
     return [right[0]/length, right[1]/length, right[2]/length]
 
-def key_down(key, x, y):
-    try: Player['Settings']['ActiveKeys'].add(key.decode('utf-8'))
+def key_down(key):
+    try:Player['Settings']['ActiveKeys'].add(key.decode('utf-8'))
     except KeyError: pass
     except AttributeError: Player['Settings']['ActiveKeys'].add(key)
 
-def key_release(key, x, y):
-    try: Player['Settings']['ActiveKeys'].remove(key.decode('utf-8'))
+def key_release(key):
+    try:Player['Settings']['ActiveKeys'].remove(key.decode('utf-8'))
     except KeyError: pass
     except AttributeError: Player['Settings']['ActiveKeys'].remove(key)
 
@@ -120,6 +117,7 @@ def keyboard():
     right = normalize((right[0], 0, right[2]))
     if INPUT_FLAGS.get('input_debug', False):
         print("Debugger Player activekey: "+str(Player['Settings']['ActiveKeys']))
+        print("Debugger Player activekey: "+str(Player['PlayerRelative']['FeetPosition']))
         print("Debugger Player rotation: "+str(forward)+" Right Direction: "+str(right))
     if 's' in Player['Settings']['ActiveKeys']:
         if Player['WorldInteraction']['velocity'][0] < Player['WorldInteraction']['max_walk_speed'] and Player['WorldInteraction']['velocity'][2] < Player['WorldInteraction']['max_walk_speed']:
@@ -139,7 +137,7 @@ def keyboard():
         RENDER_FLAGS['Debug'] = True
     if '3' in Player['Settings']['ActiveKeys'] and 'A' in Player['Settings']['ActiveKeys']:
         RENDER_FLAGS['Debug'] = False
-    if ' ' in Player['Settings']['ActiveKeys']:
+    if 32 in Player['Settings']['ActiveKeys']:
         if Player['PlayerRelative']['on_ground']:
             Player['WorldInteraction']['velocity'][1] = Player['WorldInteraction']['jump_strengh']
             Player['PlayerRelative']['on_ground'] = False
