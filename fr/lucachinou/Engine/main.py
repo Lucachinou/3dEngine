@@ -72,6 +72,9 @@ def display():
     FeetRound = float(f"{Player.Player['PlayerRelative']['FeetPosition'][0]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][1]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][2]:.3g}")
     RenderUI.draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}", font=BitmapFont(ASSETS_DIR / "fonts/default.json"))
 
+    RenderUI.draw_text_2d(50, 250, f"Hello, world!",
+                          font=BitmapFont(ASSETS_DIR / "fonts/default.json"))
+
     RenderUI.draw_crosshair(*RenderUI.load_texture("crosshair.png"), width, height)
     RenderUI.end_ortho()
 

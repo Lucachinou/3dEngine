@@ -82,31 +82,32 @@ def draw_text_2d(x, y, text, font):
     cursor_x = x
     cursor_y = y
 
-    for ch in text:
-        if ch == "\n":
-            cursor_x = x
-            cursor_y += font.line_height
-            continue
+    if flags['enable_text_rendering']:
+        for ch in text:
+            if ch == "\n":
+                cursor_x = x
+                cursor_y += font.line_height
+                continue
 
-        if ch not in font.chars:
-            cursor_x += font.cell_size
-            continue
+            if ch not in font.chars:
+                cursor_x += font.cell_size
+                continue
 
-        g = font.chars[ch]
+            g = font.chars[ch]
 
-        u0 = g["x"] / font.tex_w
-        v0 = g["y"] / font.tex_h
-        u1 = (g["x"] + g["w"]) / font.tex_w
-        v1 = (g["y"] + g["h"]) / font.tex_h
+            u0 = g["x"] / font.tex_w
+            v0 = g["y"] / font.tex_h
+            u1 = (g["x"] + g["w"]) / font.tex_w
+            v1 = (g["y"] + g["h"]) / font.tex_h
 
-        glBegin(GL_QUADS)
-        glTexCoord2f(u0, v0); glVertex2f(cursor_x, cursor_y)
-        glTexCoord2f(u1, v0); glVertex2f(cursor_x + g["w"], cursor_y)
-        glTexCoord2f(u1, v1); glVertex2f(cursor_x + g["w"], cursor_y + g["h"])
-        glTexCoord2f(u0, v1); glVertex2f(cursor_x, cursor_y + g["h"])
-        glEnd()
+            glBegin(GL_QUADS)
+            glTexCoord2f(u0, v0); glVertex2f(cursor_x, cursor_y)
+            glTexCoord2f(u1, v0); glVertex2f(cursor_x + g["w"], cursor_y)
+            glTexCoord2f(u1, v1); glVertex2f(cursor_x + g["w"], cursor_y + g["h"])
+            glTexCoord2f(u0, v1); glVertex2f(cursor_x, cursor_y + g["h"])
+            glEnd()
 
-        cursor_x += g["advance"]
+            cursor_x += g["advance"]
 
 def draw_crosshair(texture, tw, th, screen_width, screen_height):
     glEnable(GL_TEXTURE_2D)
