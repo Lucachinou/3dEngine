@@ -70,12 +70,9 @@ def display():
 
     RenderUI.begin_ortho(width, height)
     FeetRound = float(f"{Player.Player['PlayerRelative']['FeetPosition'][0]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][1]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][2]:.3g}")
-    RenderUI.draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}", font=BitmapFont(ASSETS_DIR / "fonts/default.json"))
+    RenderUI.draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}", font="default")
 
-    RenderUI.draw_text_2d(50, 250, f"Hello, world!",
-                          font=BitmapFont(ASSETS_DIR / "fonts/default.json"))
-
-    RenderUI.draw_crosshair(*RenderUI.load_texture("crosshair.png"), width, height)
+    RenderUI.draw_crosshair(*RenderUI.load_texture(Path(ASSETS_DIR / "crosshair.png")), width, height)
     RenderUI.end_ortho()
 
     glfw.swap_buffers(window)
@@ -117,6 +114,8 @@ glfw.make_context_current(window)
 glEnable(GL_TEXTURE_2D)
 glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+RenderUI.load_fonts()
 
 glfw.set_mouse_button_callback(window, mouse_button_callback)
 glfw.set_key_callback(window, keyboard_callback)
