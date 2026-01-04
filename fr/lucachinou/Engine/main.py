@@ -70,7 +70,7 @@ def display():
 
     RenderUI.begin_ortho(width, height)
     FeetRound = float(f"{Player.Player['PlayerRelative']['FeetPosition'][0]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][1]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][2]:.3g}")
-    RenderUI.draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}", font="default")
+    RenderUI.draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}", font="default", scale=1.0)
 
     RenderUI.draw_crosshair(*RenderUI.load_texture(Path(ASSETS_DIR / "crosshair.png")), width, height)
     RenderUI.end_ortho()

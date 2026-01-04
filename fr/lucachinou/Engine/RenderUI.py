@@ -94,7 +94,7 @@ def end_ortho():
     glMatrixMode(GL_MODELVIEW)
     glPopMatrix()
 
-def draw_text_2d(x, y, text, font):
+def draw_text_2d(x, y, text, font, scale=1.0):
     glEnable(GL_TEXTURE_2D)
     glBindTexture(GL_TEXTURE_2D, Fonts[font].tex_id)
 
@@ -105,11 +105,11 @@ def draw_text_2d(x, y, text, font):
         for ch in text:
             if ch == "\n":
                 cursor_x = x
-                cursor_y += Fonts[font].line_height
+                cursor_y += Fonts[font].line_height * scale
                 continue
 
             if ch not in Fonts[font].chars:
-                cursor_x += Fonts[font].cell_size
+                cursor_x += Fonts[font].cell_size * scale
                 continue
 
             g = Fonts[font].chars[ch]
@@ -126,7 +126,7 @@ def draw_text_2d(x, y, text, font):
             glTexCoord2f(u0, v1); glVertex2f(cursor_x, cursor_y + g["h"])
             glEnd()
 
-            cursor_x += g["advance"]
+            cursor_x += g["advance"] * scale
 
 def draw_crosshair(texture, tw, th, screen_width, screen_height):
     glEnable(GL_TEXTURE_2D)
