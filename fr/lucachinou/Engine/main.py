@@ -41,6 +41,7 @@ def display():
 
     Input.INPUT_FLAGS.update({"Use_old_placement_mechanics": True, "input_debug": False})
     Render_Shape.SHAPE_FLAGS.update({"Load_texture": True})
+    RenderUI.flags.update({"enable_text_rendering": False, 'show_debug_screen': False}) # Enabling this will allow engine to display your XYZ coordinate
     Render.RENDER_FLAGS.update({"Debug": False})
 
     glRotatef(-Player.Player['CameraRelative']['CameraRotation'][0], -1.0, 0.0, 0.0)
@@ -69,8 +70,9 @@ def display():
     width, height = glfw.get_framebuffer_size(window)
 
     RenderUI.begin_ortho(width, height)
-    FeetRound = float(f"{Player.Player['PlayerRelative']['FeetPosition'][0]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][1]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][2]:.3g}")
-    RenderUI.draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}", font="default", scale=1.0)
+    if RenderUI.flags['show_debug_screen']:
+        FeetRound = float(f"{Player.Player['PlayerRelative']['FeetPosition'][0]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][1]:.3g}"), float(f"{Player.Player['PlayerRelative']['FeetPosition'][2]:.3g}")
+        RenderUI.draw_text_2d(50, 50, f"X: {FeetRound[0]} / Y: {FeetRound[1]} / Z: {FeetRound[2]}", font="default", scale=1.0)
 
     RenderUI.draw_crosshair(*RenderUI.load_texture(Path(ASSETS_DIR / "crosshair.png")), width, height)
     RenderUI.end_ortho()

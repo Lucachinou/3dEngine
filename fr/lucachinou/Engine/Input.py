@@ -4,6 +4,7 @@ import glfw
 from Player import *
 from Render import WorldElements
 from Render_Shape import is_block_exist
+from fr.lucachinou.Engine import RenderUI
 
 last_mouse_cursor = [0, 0]
 angle = 0.0
@@ -115,6 +116,7 @@ def keyboard():
 
     right = get_camera_right()
     right = normalize((right[0], 0, right[2]))
+    print(Player['Settings']['ActiveKeys'])
     if INPUT_FLAGS.get('input_debug', False):
         print("Debugger Player activekey: "+str(Player['Settings']['ActiveKeys']))
         print("Debugger Player activekey: "+str(Player['PlayerRelative']['FeetPosition']))
@@ -141,3 +143,5 @@ def keyboard():
         if Player['PlayerRelative']['on_ground']:
             Player['WorldInteraction']['velocity'][1] = Player['WorldInteraction']['jump_strengh']
             Player['PlayerRelative']['on_ground'] = False
+    if 292 in Player['Settings']['ActiveKeys']:
+        RenderUI.flags['show_debug_screen'] = True
