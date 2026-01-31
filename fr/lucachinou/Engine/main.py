@@ -39,11 +39,6 @@ def display():
     glEnable(GL_DEPTH_TEST)
     glEnable(GL_TEXTURE_2D)
 
-    Input.INPUT_FLAGS.update({"Use_old_placement_mechanics": True, "input_debug": False})
-    Render_Shape.SHAPE_FLAGS.update({"Load_texture": True})
-    RenderUI.flags.update({"enable_text_rendering": False, 'show_debug_screen': False}) # Enabling this will allow engine to display your XYZ coordinate
-    Render.RENDER_FLAGS.update({"Debug": False})
-
     glRotatef(-Player.Player['CameraRelative']['CameraRotation'][0], -1.0, 0.0, 0.0)
     glRotatef(-Player.Player['CameraRelative']['CameraRotation'][1], 0.0, 1.0, 0.0)
     glTranslatef(-Player.Player['CameraRelative']['CameraPosition'][0], -Player.Player['CameraRelative']['CameraPosition'][1], -Player.Player['CameraRelative']['CameraPosition'][2])
@@ -118,6 +113,11 @@ glEnable(GL_BLEND)
 glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
 RenderUI.load_fonts()
+
+Input.INPUT_FLAGS.update({"Use_old_placement_mechanics": True, "input_debug": False})
+Render_Shape.SHAPE_FLAGS.update({"Load_texture": True})
+RenderUI.flags.update({"enable_text_rendering": True, 'show_debug_screen': True}) # Enabling this will allow engine to display your XYZ coordinate
+Render.RENDER_FLAGS.update({"Debug": False})
 
 glfw.set_mouse_button_callback(window, mouse_button_callback)
 glfw.set_key_callback(window, keyboard_callback)

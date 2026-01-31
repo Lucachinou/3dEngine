@@ -54,7 +54,7 @@ def mouse_click(button, state, x, y):
         target_x = None
         target_y = None
         target_z = None
-        for x, y in enumerate(forward):
+        for x, y, z in enumerate(forward):
             target_x = px + (1 if -forward[0] > 0 else -1) * math.floor(abs(forward[0]) * x)
             target_y = py + (1 if -forward[1] > 0 else -1) * math.floor(abs(forward[1]) * y)
             target_z = pz + (1 if -forward[2] > 0 else -1) * math.floor(abs(forward[2]) * z)
@@ -116,7 +116,6 @@ def keyboard():
 
     right = get_camera_right()
     right = normalize((right[0], 0, right[2]))
-    print(Player['Settings']['ActiveKeys'])
     if INPUT_FLAGS.get('input_debug', False):
         print("Debugger Player activekey: "+str(Player['Settings']['ActiveKeys']))
         print("Debugger Player activekey: "+str(Player['PlayerRelative']['FeetPosition']))

@@ -11,7 +11,7 @@ DebugElements = []
 
 window = None
 
-RENDER_FLAGS = {'Debug': False, "use_deprecated_api": False}
+RENDER_FLAGS = {'Debug': False}
 
 def view_matrix(pos, rot):
     pitch = math.radians(rot[0])
