@@ -1,7 +1,18 @@
 # 3dEngine | Alpha status
 
-## I'm actually working on a cross-platform version, a preview of the version are in a separated branch of the repository
+*This project as for goal to be a final game, but for now, i'm focus on all engine specific aspect*
 
-*Basic collision system: Ready*
-*Main menu: NOT READY*
-*Basic UI system: Ready*
+
+----
+# Features planned
+- Main GUI: *Not ready*
+- Cross Platform: *Ready*
+- Easy GUI creating lib: *Not ready*
+- Optimization: *Not ready*
+
+*More planned features in the coming months!*
+
+----
+
+# License
+**This project is under the GNU GENERAL PUBLIC LICENSE**
