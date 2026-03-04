@@ -19,6 +19,7 @@ from OpenGL.GL import *
 import platform
 
 from fr.lucachinou.Engine.RenderUI import BitmapFont
+from fr.lucachinou.Engine.Render_Shape import draw_pyramid
 
 if platform.system() == "Darwin" or platform.system() == "Linux":
     print("Cross-comptatible is currently in experimental! Please report any issue you have!")

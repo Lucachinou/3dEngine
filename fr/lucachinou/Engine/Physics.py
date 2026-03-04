@@ -54,6 +54,7 @@ def Apply_Elements_Collisions():
             [element['position'][0], element['position'][1], element['position'][2]],
             [(element['size'][0] / 2), (element['size'][1] / 2), (element['size'][2] / 2)]
         )
+    Render.DebugElements = [element for element in Render.DebugElements if math.sqrt((Player.Player['PlayerRelative']['FeetPosition'][0] - element[0][0])**2 + (Player.Player['PlayerRelative']['FeetPosition'][1] - element[0][1])**2 + (Player.Player['PlayerRelative']['FeetPosition'][2] - element[0][2])**2) < 3]
 
 def resolve_collision(player_pos, player_half, cube_pos, cube_half):
     px, py, pz = player_pos
@@ -73,7 +74,9 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
     overlap_z = z_process
 
     if Render.RENDER_FLAGS.get("Debug", False):
-        Render.DebugElements.append(([cx, cy, cz], [x_process + abs(dx), y_process + abs(dy), z_process + abs(dz)]))
+        distance = math.sqrt((px - cx)**2 + (py - cy)**2 + (pz - cz)**2)
+        if distance < 3:
+            Render.DebugElements.append(([cx, cy, cz], [cube_half[0] * 2 + 0.01, cube_half[1] * 2 + 0.01, cube_half[2] * 2 + 0.01]))
 
     on_ground_per_frame = False
 
@@ -90,15 +93,10 @@ def resolve_collision(player_pos, player_half, cube_pos, cube_half):
                 py -= overlap_y
                 on_ground_per_frame = False
         elif overlap_min == overlap_x:
-            if Render.RENDER_FLAGS.get("Debug", False):
-                print("COLLISION X")
-                print(py, cy)
-            px += overlap_x * (1 if dx > 0 else -1)
-            on_ground_per_frame = False
+            if (dx > 0 > Player.Player['WorldInteraction']['velocity'][0]) or (dx < 0 < Player.Player['WorldInteraction']['velocity'][0] > 0):
+                px += overlap_x * (1 if dx > 0 else -1)
         elif overlap_min == overlap_z:
-            if Render.RENDER_FLAGS.get("Debug", False):
-                print("COLLISION Z")
-            pz += overlap_z * (1 if dz > 0 else -1)
-            on_ground_per_frame = False
+            if (dz > 0 > Player.Player['WorldInteraction']['velocity'][2]) or (dz < 0 < Player.Player['WorldInteraction']['velocity'][2] > 0):
+                pz += overlap_z * (1 if dz > 0 else -1)
     Player.Player['PlayerRelative']['on_ground'] |= on_ground_per_frame
     return [px, py, pz]
