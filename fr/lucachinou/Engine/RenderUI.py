@@ -118,11 +118,12 @@ def draw_text_2d(x, y, text, font, scale=1.0):
             u1 = (g["x"] + g["w"]) / Fonts[font].tex_w
             v1 = (g["y"] + g["h"]) / Fonts[font].tex_h
 
+            yoff = g.get("yoffset", 0) * scale
             glBegin(GL_QUADS)
-            glTexCoord2f(u0, v0); glVertex2f(cursor_x, cursor_y)
-            glTexCoord2f(u1, v0); glVertex2f(cursor_x + g["w"], cursor_y)
-            glTexCoord2f(u1, v1); glVertex2f(cursor_x + g["w"], cursor_y + g["h"])
-            glTexCoord2f(u0, v1); glVertex2f(cursor_x, cursor_y + g["h"])
+            glTexCoord2f(u0, v0); glVertex2f(cursor_x, cursor_y + yoff)
+            glTexCoord2f(u1, v0); glVertex2f(cursor_x + g["w"], cursor_y + yoff)
+            glTexCoord2f(u1, v1); glVertex2f(cursor_x + g["w"], cursor_y + yoff + g["h"])
+            glTexCoord2f(u0, v1); glVertex2f(cursor_x, cursor_y + yoff + g["h"])
             glEnd()
 
             cursor_x += g["advance"] * scale
