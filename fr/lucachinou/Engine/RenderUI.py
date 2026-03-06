@@ -50,18 +50,18 @@ class BitmapFont:
     def _load_texture(self, path):
         img = Image.open(path).convert("RGBA")
         self.tex_width, self.tex_height = img.size
-        img_data = img.tobytes()
 
         datas = img.getdata()
         new_data = []
         for item in datas:
             r, g, b, a = item
             if r == 0 and g == 0 and b == 0 and a == 255:
-                new_data.append((0,0,0,0))
+                new_data.append((0, 0, 0, 0))
             else:
                 new_data.append(item)
 
         img.putdata(new_data)
+        img_data = img.tobytes()
         self.tex_id = glGenTextures(1)
         glBindTexture(GL_TEXTURE_2D, self.tex_id)
 
@@ -71,9 +71,8 @@ class BitmapFont:
             0, GL_RGBA, GL_UNSIGNED_BYTE, img_data
         )
 
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
 
         return self.tex_id
 
@@ -119,11 +118,12 @@ def draw_text_2d(x, y, text, font, scale=1.0):
             u1 = (g["x"] + g["w"]) / Fonts[font].tex_w
             v1 = (g["y"] + g["h"]) / Fonts[font].tex_h
 
+            yoff = g.get("yoffset", 0) * scale
             glBegin(GL_QUADS)
-            glTexCoord2f(u0, v0); glVertex2f(cursor_x, cursor_y)
-            glTexCoord2f(u1, v0); glVertex2f(cursor_x + g["w"], cursor_y)
-            glTexCoord2f(u1, v1); glVertex2f(cursor_x + g["w"], cursor_y + g["h"])
-            glTexCoord2f(u0, v1); glVertex2f(cursor_x, cursor_y + g["h"])
+            glTexCoord2f(u0, v0); glVertex2f(cursor_x, cursor_y + yoff)
+            glTexCoord2f(u1, v0); glVertex2f(cursor_x + g["w"], cursor_y + yoff)
+            glTexCoord2f(u1, v1); glVertex2f(cursor_x + g["w"], cursor_y + yoff + g["h"])
+            glTexCoord2f(u0, v1); glVertex2f(cursor_x, cursor_y + yoff + g["h"])
             glEnd()
 
             cursor_x += g["advance"] * scale
