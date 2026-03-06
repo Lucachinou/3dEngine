@@ -50,7 +50,7 @@ def Apply_Elements_Collisions():
         Render_Shape.draw_cube(element['position'][0], element['position'][1], element['position'][2], element['texture'])
         Player.Player['PlayerRelative']['FeetPosition'] = resolve_collision(
             Player.Player['PlayerRelative']['FeetPosition'],
-            [0.2, 0.9, 0.2],
+            [0.4, 0.9, 0.4],
             [element['position'][0], element['position'][1], element['position'][2]],
             [(element['size'][0] / 2), (element['size'][1] / 2), (element['size'][2] / 2)]
         )

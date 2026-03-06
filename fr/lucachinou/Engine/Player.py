@@ -1,7 +1,7 @@
 Player = {
     'WorldInteraction': {
-        'speed': 3.0,
-        'gravity': 20.0,
+        'speed': 3.5,
+        'gravity': 19.0,
         'friction': 15.0,
         'jump_strengh': 7.0,
         'max_walk_speed': 0.3,

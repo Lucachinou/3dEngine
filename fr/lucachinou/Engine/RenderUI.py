@@ -7,8 +7,6 @@ from pathlib import Path
 from PIL import Image
 
 flags = {'enable_text_rendering': True, "show_debug_screen": True}
-if flags['enable_text_rendering']:
-    print("Text rendering feature still in experimental!")
 
 Fonts = {}
 

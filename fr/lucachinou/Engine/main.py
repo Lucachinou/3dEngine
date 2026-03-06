@@ -106,7 +106,7 @@ def mouse_pos_callback(window, x, y):
     width, height = glfw.get_framebuffer_size(window)
     Input.mouse(window, x, y, height, width)
 
-window = glfw.create_window(800, 600, "Engine", None, None)
+window = glfw.create_window(1200, 800, "Engine", None, None)
 Render.window = window
 glfw.make_context_current(window)
 glEnable(GL_TEXTURE_2D)
